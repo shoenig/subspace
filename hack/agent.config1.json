@@ -1,0 +1,12 @@
+{
+    "api.bind.address": "0.0.0.0:3000",
+    "torrent.bind.address": "0.0.0.0:3001",
+    "data.dir": "/tmp/agnt1/data",
+    "master.peers" : [
+        {
+            "host": "127.0.0.1",
+            "api.port": 4000,
+            "dht.port": 4001
+        }
+    ]
+}
