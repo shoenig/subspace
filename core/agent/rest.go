@@ -25,7 +25,7 @@ func apiServer(addr string, tclient *torrent.Client) *http.Server {
 func router(tclient *torrent.Client) *mux.Router {
 	r := mux.NewRouter()
 	a := &api{tclient: tclient}
-	r.HandleFunc("/v1/create/{name}", a.create).Methods("POST")
+	r.HandleFunc("/v1/create", a.create).Methods("POST")
 	return r
 }
 
@@ -34,8 +34,6 @@ type api struct {
 }
 
 func (a *api) create(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
 	var bundle state.Bundle
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&bundle); err != nil {
@@ -43,5 +41,10 @@ func (a *api) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("/v1/create with name:", vars["name"], bundle)
+	if err := state.Validate(bundle); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	log.Println("/v1/create with name:", bundle.Name, "owner:", bundle.Owner)
 }
