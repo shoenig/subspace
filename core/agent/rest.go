@@ -23,7 +23,7 @@ func apiServer(addr string, tclient *torrent.Client) *http.Server {
 func router(tclient *torrent.Client) *mux.Router {
 	r := mux.NewRouter()
 	a := &api{tclient: tclient}
-	r.HandleFunc("/v1/create/{name}", a.newBundle)
+	r.HandleFunc("/v1/create/{name}", a.create)
 	return r
 }
 
