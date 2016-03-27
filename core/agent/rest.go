@@ -3,12 +3,14 @@
 package agent
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/anacrolix/torrent"
 	"github.com/gorilla/mux"
+	"github.com/shoenig/subspace/core/state"
 )
 
 func apiServer(addr string, tclient *torrent.Client) *http.Server {
@@ -23,7 +25,7 @@ func apiServer(addr string, tclient *torrent.Client) *http.Server {
 func router(tclient *torrent.Client) *mux.Router {
 	r := mux.NewRouter()
 	a := &api{tclient: tclient}
-	r.HandleFunc("/v1/create/{name}", a.create)
+	r.HandleFunc("/v1/create/{name}", a.create).Methods("POST")
 	return r
 }
 
@@ -33,5 +35,13 @@ type api struct {
 
 func (a *api) create(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	log.Println("/v1/create with name=", vars["name"])
+
+	var bundle state.Bundle
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&bundle); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	log.Println("/v1/create with name:", vars["name"], bundle)
 }
