@@ -9,6 +9,10 @@ type MemTorrent struct {
 	data bytes.Buffer
 }
 
+func NewMemTorrent() *MemTorrent {
+	return &MemTorrent{}
+}
+
 func (t *MemTorrent) Read(p []byte) (n int, err error) {
 	return t.data.Read(p)
 }

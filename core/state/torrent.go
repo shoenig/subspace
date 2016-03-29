@@ -4,7 +4,6 @@ package state
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -53,20 +52,14 @@ func Torrentify(masters config.Masters, bundle Bundle, workers int) (*metainfo.M
 		return nil, fmt.Errorf("failed to create batch from bundle: %v", err)
 	}
 
-	log.Println("[torrent] creating torrent tempfile")
-	// 5) create a tmpfile to write the torrent
-	file, err := ioutil.TempFile("", "subspace-torrent-")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create tmpfile for torrent: %v", err)
-	}
-
+	// 5) start creating the torrent, in memory
 	log.Println("[torrent] executing batch.Start")
-	// 6) finally create the torrent
-	errC, progC := batch.Start(file, workers)
+	mtor := NewMemTorrent()
+	errC, progC := batch.Start(mtor, workers)
 
-	log.Println("[torrent] batch.Start has begun")
+	log.Println("[torrent] batch.Start has begun, waiting for completion")
 
-	// 7) wait on torrent creation, printing out stats along the way
+	// 6) wait on torrent creation, printing out stats along the way
 WAIT:
 	for {
 		select {
@@ -80,13 +73,7 @@ WAIT:
 		}
 	}
 
-	log.Println("[torrent] closing the tmpfile")
-
-	if err := file.Close(); err != nil {
-		return nil, fmt.Errorf("failed to close torrent tmpfile: %v", err)
-	}
-
-	log.Println("[torrent] loading the metainfo from the tmpfile")
-	// 8) return metainfo on the torrent file we created
-	return metainfo.LoadFromFile(file.Name())
+	log.Println("[torrent] loading the metainfo from memory")
+	// 7) return metainfo on the torrent file we created
+	return metainfo.Load(mtor)
 }
