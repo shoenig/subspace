@@ -20,9 +20,9 @@ func MustLoadConfig(filename string) *Config {
 
 // Config is a representation of the on-disk config file for subspace-master.
 type Config struct {
-	APIBindAddr string              `json:"api.bind.address"`
-	DHTBindAddr string              `json:"dht.bind.address"`
-	MasterPeers []config.MasterPeer `json:"master.peers"`
+	APIBindAddr string         `json:"api.bind.address"`
+	DHTBindAddr string         `json:"dht.bind.address"`
+	MasterPeers config.Masters `json:"master.peers"`
 }
 
 func (c *Config) String() string {

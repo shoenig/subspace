@@ -51,6 +51,6 @@ func (a *Agent) Start() {
 
 	log.Println("i am agent", tclient.PeerID())
 
-	api := apiServer(a.config.APIBindAddr, tclient)
+	api := apiServer(a.config.APIBindAddr, a.config.Masters, tclient)
 	log.Fatal(api.ListenAndServe())
 }

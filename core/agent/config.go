@@ -18,10 +18,10 @@ func MustLoadConfig(filename string) *Config {
 }
 
 type Config struct {
-	APIBindAddr     string              `json:"api.bind.address"`
-	TorrentBindAddr string              `json:"torrent.bind.address"`
-	DataDir         string              `json:"data.dir"`
-	MasterPeers     []config.MasterPeer `json:"master.peers"`
+	APIBindAddr     string         `json:"api.bind.address"`
+	TorrentBindAddr string         `json:"torrent.bind.address"`
+	DataDir         string         `json:"data.dir"`
+	Masters         config.Masters `json:"master.peers"`
 }
 
 func (c *Config) String() string {

@@ -10,26 +10,31 @@ import (
 
 	"github.com/anacrolix/torrent"
 	"github.com/gorilla/mux"
+	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/state"
 )
 
-func apiServer(addr string, tclient *torrent.Client) *http.Server {
+func apiServer(
+	address string,
+	masters config.Masters,
+	tclient *torrent.Client) *http.Server {
 	return &http.Server{
-		Addr:         addr,
-		Handler:      router(tclient),
+		Addr:         address,
+		Handler:      router(masters, tclient),
 		ReadTimeout:  10 * time.Minute,
 		WriteTimeout: 30 * time.Second,
 	}
 }
 
-func router(tclient *torrent.Client) *mux.Router {
+func router(masters config.Masters, tclient *torrent.Client) *mux.Router {
 	r := mux.NewRouter()
-	a := &api{tclient: tclient}
+	a := &api{masters: masters, tclient: tclient}
 	r.HandleFunc("/v1/create", a.create).Methods("POST")
 	return r
 }
 
 type api struct {
+	masters config.Masters
 	tclient *torrent.Client
 }
 
@@ -47,4 +52,19 @@ func (a *api) create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("/v1/create with name:", bundle.Name, "owner:", bundle.Owner)
+
+	// create torrent of bundle
+	if minfo, err := state.Torrentify(a.masters, bundle, 4); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	} else {
+		// lets check out the metainfo
+		log.Println("made torrent ...")
+		log.Println("info.Comment", minfo.Comment)
+		log.Println("info.CreatedBy", minfo.CreatedBy)
+		log.Println("info.CreationDate", minfo.CreationDate)
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("created torrent!"))
+	}
 }
