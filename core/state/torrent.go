@@ -22,6 +22,7 @@ func Torrentify(masters config.Masters, bundle Bundle, workers int) (*metainfo.M
 
 	log.Println("[torrent] setting metadata")
 	// 2) set meta information
+	builder.SetName(bundle.Name)
 	builder.SetComment(bundle.Comment)
 	builder.SetCreatedBy(bundle.Owner)
 	builder.SetCreationDate(time.Now().UTC())

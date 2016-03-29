@@ -4,11 +4,13 @@ package agent
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/anacrolix/torrent"
+	"github.com/anacrolix/torrent/metainfo"
 	"github.com/gorilla/mux"
 	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/state"
@@ -53,19 +55,21 @@ func (a *API) Create(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("/v1/create with name:", bundle.Name, "owner:", bundle.Owner)
 
-	if err := a.create(bundle); err != nil {
+	minfo, err := a.create(bundle)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("created torrent!\n"))
+	s := fmt.Sprintf("created torrent: %s\n", minfo.Info.Name)
+	w.Write([]byte(s))
 }
 
-func (a *API) create(bundle state.Bundle) error {
+func (a *API) create(bundle state.Bundle) (*metainfo.MetaInfo, error) {
 	minfo, err := state.Torrentify(a.masters, bundle, 4)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// lets check out the metainfo
@@ -73,5 +77,5 @@ func (a *API) create(bundle state.Bundle) error {
 	log.Println("info.Comment", minfo.Comment)
 	log.Println("info.CreatedBy", minfo.CreatedBy)
 	log.Println("info.CreationDate", minfo.CreationDate)
-	return nil
+	return minfo, nil
 }
