@@ -6,12 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"regexp"
-)
-
-var (
-	validNameRe  = regexp.MustCompile("^[a-z]+[a-z_-]*$")
-	validOwnerRe = regexp.MustCompile("^[a-z]+$")
 )
 
 type Bundle struct {
@@ -26,7 +20,7 @@ func UnpackBundle(r io.Reader) (Bundle, error) {
 }
 
 func ValidateBundle(b Bundle) error {
-	if !validNameRe.MatchString(b.Name) {
+	if !ValidNameRe.MatchString(b.Name) {
 		return fmt.Errorf(
 			"bundle.Name is bad: '%s'",
 			b.Name,
@@ -37,7 +31,7 @@ func ValidateBundle(b Bundle) error {
 		return fmt.Errorf("bundle has empty path")
 	}
 
-	if !validOwnerRe.MatchString(b.Owner) {
+	if !ValidOwnerRe.MatchString(b.Owner) {
 		return fmt.Errorf(
 			"bundle.Owner is bad: '%s'",
 			b.Owner,

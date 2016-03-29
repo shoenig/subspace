@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/anacrolix/torrent"
+	"github.com/shoenig/subspace/core/master"
 )
 
 type Agent struct {
@@ -51,6 +52,8 @@ func (a *Agent) Start() {
 
 	log.Println("i am agent", tclient.PeerID())
 
-	api := apiServer(a.config.APIBindAddr, a.config.Masters, tclient)
+	mclient := master.NewClient(a.config.Masters)
+
+	api := apiServer(a.config.APIBindAddr, a.config.Masters, mclient, tclient)
 	log.Fatal(api.ListenAndServe())
 }

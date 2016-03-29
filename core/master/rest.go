@@ -3,17 +3,17 @@
 package master
 
 import (
-	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/shoenig/subspace/core/state"
+	"github.com/shoenig/subspace/core/state/subscription"
 )
 
 func apiServer(address string) *http.Server {
-	return &htp.Server{
+	return &http.Server{
 		Addr:         address,
 		Handler:      router(),
 		ReadTimeout:  30 * time.Second,
@@ -24,26 +24,33 @@ func apiServer(address string) *http.Server {
 func router() *mux.Router {
 	r := mux.NewRouter()
 	a := &API{}
-	// r.HandleFunc("/v1/notify", a.Notify).Methods("POST")
-	r.HandleFunc("/v1/create", a.Create).Methods.P
+	r.HandleFunc("/v1/subscription/create", a.CreateSubscription).Methods("POST")
 	return r
 }
 
+// API is the api handler for a master.
 type API struct {
 }
 
-func (a *API) Create(w http.ResponseWriter, r *http.Request) {
-}
-
-// Notify that a new torrent has been created and should be downloaded,
-// processed, and then real data should be downloaded.
-func (a *API) Notify(w http.ResponseWriter, r *http.Request) {
-	var notification state.Notification
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&notification); err != nil {
+// CreateSubscription is the handler of a master that will actually create a subscription.
+func (a *API) CreateSubscription(w http.ResponseWriter, r *http.Request) {
+	creation, err := subscription.UnpackCreation(r.Body)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	log.Println("/v1/notify:", notification)
+	if err := a.createSubscription(creation); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(200)
+	msg := fmt.Sprintf("create subscription %v", creation)
+	w.Write([]byte(msg))
+}
+
+func (a *API) createSubscription(c subscription.Creation) error {
+	log.Println("master will create subscription:", c)
+	return nil
 }
