@@ -8,25 +8,47 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Validate(t *testing.T) {
-	require.Error(t, Validate(Bundle{
+func Test_ValidateBundle_no_name(t *testing.T) {
+	require.Error(t, ValidateBundle(Bundle{
 		Name:    "",
 		Path:    "/tmp/abc",
 		Owner:   "devops",
 		Comment: "a nice little comment",
 	}))
+}
 
-	require.Error(t, Validate(Bundle{
+func Test_ValidateBundle_bad_name(t *testing.T) {
+	require.Error(t, ValidateBundle(Bundle{
+		Name:    "MrBigglesworth",
+		Path:    "/tmp/abc",
+		Owner:   "devops",
+		Comment: "a nice little comment",
+	}))
+}
+
+func Test_ValidateBundle_no_path(t *testing.T) {
+	require.Error(t, ValidateBundle(Bundle{
 		Name:    "foobar",
 		Path:    "",
 		Owner:   "devops",
 		Comment: "a nice little comment",
 	}))
+}
 
-	require.NoError(t, Validate(Bundle{
+func Test_ValidateBundle_bad_owner(t *testing.T) {
+	require.Error(t, ValidateBundle(Bundle{
 		Name:    "foobar",
 		Path:    "/tmp/abc",
-		Owner:   "",
+		Owner:   "dev.ops",
+		Comment: "a nice little comment",
+	}))
+}
+
+func Test_ValidateBundle_ok(t *testing.T) {
+	require.NoError(t, ValidateBundle(Bundle{
+		Name:    "foobar",
+		Path:    "/tmp/abc",
+		Owner:   "devops",
 		Comment: "",
 	}))
 }
