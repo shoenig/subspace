@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/master"
-	"github.com/shoenig/subspace/core/common/subscription"
+	"github.com/shoenig/subspace/core/common/stream"
 )
 
 func apiServer(
@@ -30,7 +30,7 @@ func apiServer(
 func router(masters config.Masters, mclient *master.Client, tclient *torrent.Client) *mux.Router {
 	r := mux.NewRouter()
 	a := &API{masters: masters, mclient: mclient, tclient: tclient}
-	r.HandleFunc("/v1/subscription/create", a.CreateSubscription).Methods("POST")
+	r.HandleFunc("/v1/stream/create", a.CreateStream).Methods("POST")
 	// r.HandleFunc("/v1/create", a.Create).Methods("POST")
 	return r
 }
@@ -42,24 +42,29 @@ type API struct {
 	tclient *torrent.Client
 }
 
-// CreateSubscription is an endpoint for creating a new subscription.
-func (a *API) CreateSubscription(w http.ResponseWriter, r *http.Request) {
-	creation, err := subscription.UnpackCreation(r.Body)
+// CreateStream is an endpoint for creating a new stream.
+func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
+	creation, err := stream.UnpackCreation(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := a.createSubscription(creation); err != nil {
+	if err := a.CreateStream(creation); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func (a *API) createSubscription(c subscription.Creation) error {
-	log.Println("client create subscription:", c)
-	return a.mclient.CreateSubscription(c)
+func (a *API) createStream(c stream.Creation) error {
+	log.Println("client create stream:", c)
+	return a.mclient.CreateStream(c)
 }
+
+
+
+
+// an old example of creating a torrent
 
 // func (a *API) Create(w http.ResponseWriter, r *http.Request) {
 // 	var bundle common.Bundle

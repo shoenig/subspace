@@ -1,19 +1,16 @@
 // Author hoenig
 
-package subscription
+package stream
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
-
-	"github.com/shoenig/subspace/core/common"
 )
 
 // Creation is the information required to request the masters to establish a new Subscription
 type Creation struct {
-	Name  string `json:"name"`
-	Owner string `json:"owner"`
+    Info
 }
 
 // UnpackCreation unpacks a json representation of a creation given an io.Reader.
@@ -31,17 +28,7 @@ func UnpackCreation(r io.Reader) (Creation, error) {
 	return creation, nil
 }
 
-func (c Creation) valid() error {
-	if !common.ValidNameRe.MatchString(c.Name) {
-		return fmt.Errorf("subscription creation name is bad: '%s'", c.Name)
-	}
 
-	if !common.ValidOwnerRe.MatchString(c.Owner) {
-		return fmt.Errorf("subscription creation owner is bad: '%s'", c.Owner)
-	}
-
-	return nil
-}
 
 // String returns a nicely formatted string representation of c.
 func (c Creation) String() string {
@@ -56,8 +43,3 @@ func (c Creation) JSON() (string, error) {
 	}
 	return string(bs), nil
 }
-
-// Publication is the information sent from an agent that created a torrent
-// type Publication struct {
-// 	Name string `json:"subscription"`
-// }

@@ -13,7 +13,7 @@ import (
 type MasterFSM struct {
 	lock sync.Mutex
 
-	subscriptions []subscription.Subscription
+	streams []stream.Stream
 }
 
 func (fsm *MasterFSM) Apply(log *raft.Log) interface{} {

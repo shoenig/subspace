@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/shoenig/subspace/core/common/subscription"
+	"github.com/shoenig/subspace/core/common/stream"
 )
 
 func apiServer(address string) *http.Server {
@@ -24,7 +24,7 @@ func apiServer(address string) *http.Server {
 func router() *mux.Router {
 	r := mux.NewRouter()
 	a := &API{}
-	r.HandleFunc("/v1/subscription/create", a.CreateSubscription).Methods("POST")
+	r.HandleFunc("/v1/stream/create", a.CreateStream).Methods("POST")
 	return r
 }
 
@@ -32,25 +32,25 @@ func router() *mux.Router {
 type API struct {
 }
 
-// CreateSubscription is the handler of a master that will actually create a subscription.
-func (a *API) CreateSubscription(w http.ResponseWriter, r *http.Request) {
-	creation, err := subscription.UnpackCreation(r.Body)
+// CreateStream is the handler of a master that will actually create a stream.
+func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
+	creation, err := stream.UnpackCreation(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := a.createSubscription(creation); err != nil {
+	if err := a.createStream(creation); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(200)
-	msg := fmt.Sprintf("create subscription %v", creation)
+	msg := fmt.Sprintf("create stream %v", creation)
 	w.Write([]byte(msg))
 }
 
-func (a *API) createSubscription(c subscription.Creation) error {
-	log.Println("master will create subscription:", c)
+func (a *API) createStream(c stream.Creation) error {
+	log.Println("master will create stream:", c)
 	return nil
 }

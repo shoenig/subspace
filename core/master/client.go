@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/shoenig/subspace/core/config"
-	"github.com/shoenig/subspace/core/common/subscription"
+	"github.com/shoenig/subspace/core/common/stream"
 	"github.com/shoenig/toolkit"
 )
 
@@ -31,13 +31,13 @@ func NewClient(masters config.Masters) *Client {
 	}
 }
 
-// CreateSubscription is used for sending a subscription creation request to the masters
-func (c *Client) CreateSubscription(creation subscription.Creation) error {
+// CreateStream is used for sending a stream creation request to the masters
+func (c *Client) CreateStream(creation stream.Creation) error {
 	js, err := creation.JSON()
 	if err != nil {
 		return err
 	}
-	return c.doPOST("/v1/subscription/create", js)
+	return c.doPOST("/v1/stream/create", js)
 }
 
 // attempt to POST some json to the masters
