@@ -1,6 +1,6 @@
 // Author hoenig
 
-package state
+package common
 
 // func Test_CreateBundle_file(t *testing.T) {
 // 	content := []byte("this is the content of a file!")

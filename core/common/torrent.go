@@ -1,6 +1,6 @@
 // Author hoenig
 
-package state
+package common
 
 import (
 	"fmt"

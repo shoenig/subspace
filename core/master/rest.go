@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/shoenig/subspace/core/state/subscription"
+	"github.com/shoenig/subspace/core/common/subscription"
 )
 
 func apiServer(address string) *http.Server {

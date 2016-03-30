@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/shoenig/subspace/core/config"
-	"github.com/shoenig/subspace/core/state/subscription"
+	"github.com/shoenig/subspace/core/common/subscription"
 	"github.com/shoenig/toolkit"
 )
 

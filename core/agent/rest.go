@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/master"
-	"github.com/shoenig/subspace/core/state/subscription"
+	"github.com/shoenig/subspace/core/common/subscription"
 )
 
 func apiServer(
@@ -62,14 +62,14 @@ func (a *API) createSubscription(c subscription.Creation) error {
 }
 
 // func (a *API) Create(w http.ResponseWriter, r *http.Request) {
-// 	var bundle state.Bundle
+// 	var bundle common.Bundle
 // 	decoder := json.NewDecoder(r.Body)
 // 	if err := decoder.Decode(&bundle); err != nil {
 // 		http.Error(w, err.Error(), http.StatusBadRequest)
 // 		return
 // 	}
 
-// 	if err := state.ValidateBundle(bundle); err != nil {
+// 	if err := common.ValidateBundle(bundle); err != nil {
 // 		http.Error(w, err.Error(), http.StatusBadRequest)
 // 		return
 // 	}
@@ -87,8 +87,8 @@ func (a *API) createSubscription(c subscription.Creation) error {
 // 	w.Write([]byte(s))
 // }
 
-// func (a *API) create(bundle state.Bundle) (*metainfo.MetaInfo, error) {
-// 	minfo, err := state.Torrentify(a.masters, bundle, 4)
+// func (a *API) create(bundle common.Bundle) (*metainfo.MetaInfo, error) {
+// 	minfo, err := common.Torrentify(a.masters, bundle, 4)
 // 	if err != nil {
 // 		return nil, err
 // 	}
