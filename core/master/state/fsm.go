@@ -2,5 +2,31 @@
 
 package state
 
-type BoltFSM struct {
+import (
+	"io"
+	"log"
+	"sync"
+
+	"github.com/hashicorp/raft"
+)
+
+type MasterFSM struct {
+	lock sync.Mutex
+
+	subscriptions []subscription.Subscription
+}
+
+func (fsm *MasterFSM) Apply(log *raft.Log) interface{} {
+	log.Println("fsm apply")
+	return nil
+}
+
+func (fsm *MasterFSM) Snapshot() (FSMSnapshot, error) {
+	log.Println("fsm snapshot")
+	return nil, nil
+}
+
+func (fsm *MasterFSM) Restore(closer io.ReadCloser) error {
+	log.Println("fsm restore")
+	return nil
 }

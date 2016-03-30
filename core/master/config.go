@@ -20,9 +20,13 @@ func MustLoadConfig(filename string) *Config {
 
 // Config is a representation of the on-disk config file for subspace-master.
 type Config struct {
+	// torrent
 	APIBindAddr string         `json:"api.bind.address"`
 	DHTBindAddr string         `json:"dht.bind.address"`
 	MasterPeers config.Masters `json:"master.peers"`
+
+	// raft
+	SingleMasterMode bool `json:"single.master.mode"`
 }
 
 func (c *Config) String() string {

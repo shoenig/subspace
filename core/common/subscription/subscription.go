@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/shoenig/subspace/core/state"
+	"github.com/shoenig/subspace/core/common"
 )
 
 // Creation is the information required to request the masters to establish a new Subscription
@@ -32,11 +32,11 @@ func UnpackCreation(r io.Reader) (Creation, error) {
 }
 
 func (c Creation) valid() error {
-	if !state.ValidNameRe.MatchString(c.Name) {
+	if !common.ValidNameRe.MatchString(c.Name) {
 		return fmt.Errorf("subscription creation name is bad: '%s'", c.Name)
 	}
 
-	if !state.ValidOwnerRe.MatchString(c.Owner) {
+	if !common.ValidOwnerRe.MatchString(c.Owner) {
 		return fmt.Errorf("subscription creation owner is bad: '%s'", c.Owner)
 	}
 

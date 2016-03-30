@@ -7,5 +7,6 @@
             "api.port": 4000,
             "dht.port": 4001
         }
-    ]
+    ],
+    "single.master.mode": true
 }
