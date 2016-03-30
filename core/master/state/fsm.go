@@ -3,6 +3,7 @@
 package state
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"sync"
@@ -39,10 +40,11 @@ func (fsm *MyFSM) AddStreams(streams ...stream.Stream) {
 }
 
 // DeleteStreams from consensus storage via FSM.
-func (fsm *MyFSM) DeleteStreams(names ...string) {
+// It is acceptable for each Stream to only have Name set.
+func (fsm *MyFSM) DeleteStreams(streams ...stream.Stream) {
 	fsm.lock.Lock()
-	for _, name := range names {
-		delete(fsm.streams, name)
+	for _, stream := range streams {
+		delete(fsm.streams, stream.Name)
 	}
 	fsm.lock.Unlock()
 }
@@ -58,22 +60,54 @@ func (fsm *MyFSM) CopyStreams() []stream.Stream {
 	return streams
 }
 
+// Do an Action on the FSM.
+func (fsm *MyFSM) Do(action Action) {
+	switch action.Command {
+	case AddStreams:
+		fsm.AddStreams(action.Streams...)
+	case DeleteStreams:
+		fsm.DeleteStreams(action.Streams...)
+	default:
+		panic("there is a fatal bug in this program")
+	}
+}
+
 // -- FSM interface below this line --
 
 // Apply will apply log to the FSM.
 func (fsm *MyFSM) Apply(entry *raft.Log) interface{} {
 	log.Println("fsm apply")
-	return nil
+	var action Action
+	if err := json.Unmarshal(entry.Data, &action); err != nil {
+		panic("fatal error unpacking an action:" + err.Error())
+	}
+	fsm.Do(action)
+	return nil // why does this return interface{}?
 }
 
 // Snapshot will take a snapshot of the FSM.
 func (fsm *MyFSM) Snapshot() (raft.FSMSnapshot, error) {
 	log.Println("fsm snapshot")
-	return nil, nil
+	return &MySnapshot{
+		streams: fsm.CopyStreams(),
+	}, nil
 }
 
 // Restore will restore the state of the FSM.
-func (fsm *MyFSM) Restore(closer io.ReadCloser) error {
+func (fsm *MyFSM) Restore(snapshot io.ReadCloser) error {
 	log.Println("fsm restore")
-	return nil
+	decoder := json.NewDecoder(snapshot)
+	var streams []stream.Stream
+	if err := decoder.Decode(&streams); err != nil {
+		snapshot.Close() // close no matter what
+		return err
+	}
+
+	// reset the whole FSM with the snapshot
+	fsm.lock.Lock()
+	fsm.streams = make(map[string]stream.Stream, len(streams))
+	fsm.AddStreams(streams...)
+	fsm.lock.Unlock()
+
+	return snapshot.Close()
 }

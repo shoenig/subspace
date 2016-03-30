@@ -50,7 +50,10 @@ func Test_MyFSM_AddCopyDelete(t *testing.T) {
 	require.Equal(t, fsm.streams[copied[2].Name].Owner, copied[2].Owner)
 
 	// delete 2 of the 3 streams
-	fsm.DeleteStreams("stream3", "stream1")
+	fsm.DeleteStreams(
+		stream.Stream{Info: stream.Info{Name: "stream3"}},
+		stream.Stream{Info: stream.Info{Name: "stream1"}},
+	)
 	require.Equal(t, 1, len(fsm.streams))
 	require.Contains(t, fsm.streams, "stream2")
 }

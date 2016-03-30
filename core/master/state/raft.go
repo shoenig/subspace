@@ -6,15 +6,16 @@ import (
 	// "time"
 
 	"github.com/hashicorp/raft"
+	"github.com/shoenig/subspace/core/common/stream"
 )
 
-// Consensus is a wrapper around raft for storing the expected state of things.
-type Consensus struct {
+// MyRaft is a wrapper around raft for storing the expected state of things.
+type MyRaft struct {
 	raft *raft.Raft
 }
 
-// NewConsensus creates a new store.
-func NewConsensus() (*Consensus, error) {
+// NewMyRaft creates a new store.
+func NewMyRaft() (*MyRaft, error) {
 	// rconfig := &raft.Config{
 	// 	HeartbeatTimeout:           1 * time.Second,
 	// 	ElectionTimeout:            1 * time.Second,
@@ -33,7 +34,12 @@ func NewConsensus() (*Consensus, error) {
 	// if err != nil {
 	// 	return nil, err
 	// }
-	return &Consensus{
+	return &MyRaft{
 	// raft: raft,
 	}, nil
+}
+
+// AddStreams to the raft.
+func (r *MyRaft) AddStreams(streams ...stream.Stream) {
+
 }
