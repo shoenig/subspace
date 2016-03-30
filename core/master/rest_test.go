@@ -16,8 +16,10 @@ func Test_Client_CreateStream(t *testing.T) {
 	a := API{}
 	recorder := httptest.NewRecorder()
 	creation := stream.Creation{
-		Name:  "testsub",
-		Owner: "devops",
+		Info: stream.Info{
+			Name:  "testsub",
+			Owner: "devops",
+		},
 	}
 	js, err := creation.JSON()
 	require.NoError(t, err, "failed to jsonify creation")

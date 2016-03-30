@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/common/stream"
+	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/toolkit"
 )
 

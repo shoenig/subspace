@@ -9,9 +9,9 @@ import (
 
 	"github.com/anacrolix/torrent"
 	"github.com/gorilla/mux"
+	"github.com/shoenig/subspace/core/common/stream"
 	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/master"
-	"github.com/shoenig/subspace/core/common/stream"
 )
 
 func apiServer(
@@ -50,7 +50,7 @@ func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.CreateStream(creation); err != nil {
+	if err := a.createStream(creation); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -60,9 +60,6 @@ func (a *API) createStream(c stream.Creation) error {
 	log.Println("client create stream:", c)
 	return a.mclient.CreateStream(c)
 }
-
-
-
 
 // an old example of creating a torrent
 

@@ -8,13 +8,13 @@ import (
 	"github.com/hashicorp/raft"
 )
 
-// RaftStore is a wrapper around raft for storing the expected state of things.
-type RaftStore struct {
+// Consensus is a wrapper around raft for storing the expected state of things.
+type Consensus struct {
 	raft *raft.Raft
 }
 
-// NewRaftStore creates a new store.
-func NewRaftStore() (*RaftStore, error) {
+// NewConsensus creates a new store.
+func NewConsensus() (*Consensus, error) {
 	// rconfig := &raft.Config{
 	// 	HeartbeatTimeout:           1 * time.Second,
 	// 	ElectionTimeout:            1 * time.Second,
@@ -33,7 +33,7 @@ func NewRaftStore() (*RaftStore, error) {
 	// if err != nil {
 	// 	return nil, err
 	// }
-	return &RaftStore{
-		// raft: raft,
+	return &Consensus{
+	// raft: raft,
 	}, nil
 }

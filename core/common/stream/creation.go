@@ -10,7 +10,7 @@ import (
 
 // Creation is the information required to request the masters to establish a new Subscription
 type Creation struct {
-    Info
+	Info
 }
 
 // UnpackCreation unpacks a json representation of a creation given an io.Reader.
@@ -27,8 +27,6 @@ func UnpackCreation(r io.Reader) (Creation, error) {
 
 	return creation, nil
 }
-
-
 
 // String returns a nicely formatted string representation of c.
 func (c Creation) String() string {
