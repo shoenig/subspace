@@ -5,8 +5,15 @@ package state
 import (
 	// "time"
 
+	"encoding/json"
+	"time"
+
 	"github.com/hashicorp/raft"
 	"github.com/shoenig/subspace/core/common/stream"
+)
+
+const (
+	timeout = 10 * time.Second // todo, tuneable?
 )
 
 // MyRaft is a wrapper around raft for storing the expected state of things.
@@ -39,7 +46,27 @@ func NewMyRaft() (*MyRaft, error) {
 	}, nil
 }
 
-// AddStreams to the raft.
-func (r *MyRaft) AddStreams(streams ...stream.Stream) {
+func (r *MyRaft) apply(action Action) error {
+	bs, err := json.Marshal(action)
+	if err != nil {
+		return err
+	}
+	f := r.raft.Apply(bs, timeout)
+	return f.Error()
+}
 
+// AddStreams to the raft.
+func (r *MyRaft) AddStreams(streams ...stream.Stream) error {
+	return r.apply(Action{
+		Command: AddStreams,
+		Streams: streams,
+	})
+}
+
+// DeleteStreams from the raft.
+func (r *MyRaft) DeleteStreams(streams ...stream.Stream) error {
+	return r.apply(Action{
+		Command: DeleteStreams,
+		Streams: streams,
+	})
 }
