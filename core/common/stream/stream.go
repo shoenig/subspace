@@ -30,3 +30,13 @@ func (i Info) valid() error {
 type Stream struct {
 	Info
 }
+
+// NewStream creates a new stream with the given name and owner.
+func New(name, owner string) Stream {
+	return Stream{
+		Info: Info{
+			Name:  name,
+			Owner: owner,
+		},
+	}
+}

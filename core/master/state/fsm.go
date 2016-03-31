@@ -33,10 +33,15 @@ func NewMyFSM() *MyFSM {
 // AddStreams to consensus storage via the FSM.
 func (fsm *MyFSM) AddStreams(streams ...stream.Stream) {
 	fsm.lock.Lock()
+	fsm.addStreams(streams...)
+	fsm.lock.Unlock()
+}
+
+// fsm.lock must be held
+func (fsm *MyFSM) addStreams(streams ...stream.Stream) {
 	for _, stream := range streams {
 		fsm.streams[stream.Name] = stream
 	}
-	fsm.lock.Unlock()
 }
 
 // DeleteStreams from consensus storage via FSM.
@@ -106,7 +111,7 @@ func (fsm *MyFSM) Restore(snapshot io.ReadCloser) error {
 	// reset the whole FSM with the snapshot
 	fsm.lock.Lock()
 	fsm.streams = make(map[string]stream.Stream, len(streams))
-	fsm.AddStreams(streams...)
+	fsm.addStreams(streams...)
 	fsm.lock.Unlock()
 
 	return snapshot.Close()
