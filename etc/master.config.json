@@ -1,5 +1,5 @@
 {
-    "api.bind.address": "0.0.0.0:4000",
+    "api.bind.address": "127.0.0.1:4000",
     "dht.bind.address": "0.0.0.0:4001",
     "masters" : [
         {

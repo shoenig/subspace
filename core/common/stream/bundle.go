@@ -1,6 +1,6 @@
 // Author hoenig
 
-package common
+package stream
 
 import (
 	"encoding/json"
@@ -9,9 +9,8 @@ import (
 )
 
 type Bundle struct {
-	Name    string `json:"name"`
+	Info
 	Path    string `json:"path"`
-	Owner   string `json:"owner"`
 	Comment string `json:"comment"`
 }
 

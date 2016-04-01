@@ -10,10 +10,11 @@ import (
 	"time"
 
 	"github.com/anacrolix/torrent/metainfo"
+	"github.com/shoenig/subspace/core/common/stream"
 	"github.com/shoenig/subspace/core/config"
 )
 
-func Torrentify(masters config.Masters, bundle Bundle, workers int) (*metainfo.MetaInfo, error) {
+func Torrentify(masters config.Masters, bundle stream.Bundle, workers int) (*metainfo.MetaInfo, error) {
 	log.Println("[torrent] setting up the builder")
 	builder := metainfo.Builder{}
 

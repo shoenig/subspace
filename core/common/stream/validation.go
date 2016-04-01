@@ -1,6 +1,6 @@
 // Author hoenig
 
-package common
+package stream
 
 import "regexp"
 

@@ -24,6 +24,7 @@ type Config struct {
 	Masters         config.Masters `json:"masters"`
 	APIBindAddr     string         `json:"api.bind.address"`
 	TorrentBindAddr string         `json:"torrent.bind.address"`
+	DataDir         string         `json:"data.dir"`
 }
 
 func (c *Config) String() string {

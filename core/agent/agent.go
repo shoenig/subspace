@@ -37,7 +37,7 @@ func (a *Agent) Start() {
 		DisableUTP:           false,
 		DisableTCP:           false,
 		NoDefaultBlocklist:   true,
-		ConfigDir:            "", // eh
+		ConfigDir:            "", // not used
 		DisableMetainfoCache: true,
 		DisableEncryption:    true, // todo false
 		DisableIPv6:          true, // todo false
