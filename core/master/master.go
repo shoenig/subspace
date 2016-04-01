@@ -24,7 +24,7 @@ func NewMaster(config *Config) *Master {
 	}
 }
 
-// Start causes the Master to do things.s
+// Start causes the Master to do things.
 func (s *Master) Start(bootstrap bool) {
 	log.Println("-- subspace-master is starting --")
 	log.Println("master config is", s.config)

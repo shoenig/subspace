@@ -2,11 +2,7 @@
 
 package stream
 
-import (
-	"fmt"
-
-	"github.com/shoenig/subspace/core/common"
-)
+import "fmt"
 
 // Info represents the fundamental identification of a Stream
 type Info struct {
@@ -15,11 +11,11 @@ type Info struct {
 }
 
 func (i Info) valid() error {
-	if !common.ValidNameRe.MatchString(i.Name) {
+	if !ValidNameRe.MatchString(i.Name) {
 		return fmt.Errorf("stream name is bad: '%s'", i.Name)
 	}
 
-	if !common.ValidOwnerRe.MatchString(i.Owner) {
+	if !ValidOwnerRe.MatchString(i.Owner) {
 		return fmt.Errorf("stream owner is bad: '%s'", i.Owner)
 	}
 
@@ -31,7 +27,7 @@ type Stream struct {
 	Info
 }
 
-// NewStream creates a new stream with the given name and owner.
+// New creates a new stream with the given name and owner.
 func New(name, owner string) Stream {
 	return Stream{
 		Info: Info{

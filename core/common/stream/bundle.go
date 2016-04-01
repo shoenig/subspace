@@ -4,46 +4,34 @@ package stream
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 )
 
+// Bundle represents the publication of a new generation of content on a Stream.
 type Bundle struct {
 	Info
 	Path    string `json:"path"`
 	Comment string `json:"comment"`
 }
 
+// UnpackBundle unpacks a json representation of a Bundle given an io.Reader.
 func UnpackBundle(r io.Reader) (Bundle, error) {
-	return Bundle{}, nil
+	decoder := json.NewDecoder(r)
+	var bundle Bundle
+	if err := decoder.Decode(&bundle); err != nil {
+		return Bundle{}, err
+	}
+	if err := bundle.valid(); err != nil {
+		return Bundle{}, err
+	}
+	return bundle, nil
 }
 
-func ValidateBundle(b Bundle) error {
-	if !ValidNameRe.MatchString(b.Name) {
-		return fmt.Errorf(
-			"bundle.Name is bad: '%s'",
-			b.Name,
-		)
+// JSON returns the json representation of b.
+func (b Bundle) JSON() (string, error) {
+	bs, err := json.Marshal(b)
+	if err != nil {
+		return "", err
 	}
-
-	if b.Path == "" {
-		return fmt.Errorf("bundle has empty path")
-	}
-
-	if !ValidOwnerRe.MatchString(b.Owner) {
-		return fmt.Errorf(
-			"bundle.Owner is bad: '%s'",
-			b.Owner,
-		)
-	}
-
-	return nil
-}
-
-func (b Bundle) String() string {
-	if bs, err := json.Marshal(&b); err != nil {
-		return ""
-	} else {
-		return string(bs)
-	}
+	return string(bs), nil
 }

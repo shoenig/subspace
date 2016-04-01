@@ -17,5 +17,10 @@
             "api.port": 6000,
             "dht.port": 6001
         }
-    ]
+    ],
+    "raft": {
+        "single.master.mode": false,
+        "data.dir": "/tmp/raf2",
+        "bind.address": "127.0.0.1:5002"
+    }
 }

@@ -31,13 +31,22 @@ func NewClient(masters config.Masters) *Client {
 	}
 }
 
-// CreateStream is used for sending a stream creation request to the masters
+// CreateStream is used for sending a Stream creation request.
 func (c *Client) CreateStream(creation stream.Creation) error {
 	js, err := creation.JSON()
 	if err != nil {
 		return err
 	}
 	return c.doPOST("/v1/stream/create", js)
+}
+
+// Publish is used to announce the availability of a new Bundle.
+func (c *Client) Publish(bundle stream.Bundle) error {
+	js, err := bundle.JSON()
+	if err != nil {
+		return err
+	}
+	return c.doPOST("/v1/stream/publish", js)
 }
 
 // attempt to POST some json to the masters

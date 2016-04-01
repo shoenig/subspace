@@ -14,7 +14,7 @@ trap goback EXIT
 
 cd "${GOPATH}/src/github.com/shoenig/subspace/cmd/subspace-master/"
 go clean && go build
-./subspace-master --config "${GOPATH}/src/github.com/shoenig/subspace/hack/master.config1.json" & export M1=$!
+./subspace-master --bootstrap --config "${GOPATH}/src/github.com/shoenig/subspace/hack/master.config1.json" & export M1=$!
 ./subspace-master --config "${GOPATH}/src/github.com/shoenig/subspace/hack/master.config2.json" & export M2=$!
 ./subspace-master --config "${GOPATH}/src/github.com/shoenig/subspace/hack/master.config3.json" & export M3=$!
 cd "${GOPATH}/src/github.com/shoenig/subspace/cmd/subspace-agent/"

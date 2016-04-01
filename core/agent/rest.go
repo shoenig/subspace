@@ -9,7 +9,6 @@ import (
 
 	"github.com/anacrolix/torrent"
 	"github.com/gorilla/mux"
-	"github.com/shoenig/subspace/core/common"
 	"github.com/shoenig/subspace/core/common/stream"
 	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/master"
@@ -61,23 +60,23 @@ func (a *API) createStream(c stream.Creation) error {
 	return a.mclient.CreateStream(c)
 }
 
-// gimmie a torrent to publish to a stream and make it happen
+// Publish a new generation of a Bundle to a Stream.
 func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
-	publish, err := stream.UnpackPublish(r.Body)
+	bundle, err := stream.UnpackBundle(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := a.publish(publish); err != nil {
+	if err := a.publish(bundle); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func (a *API) publish(b common.Bundle) error {
-	log.Println("publish a thing:", p)
-	return a.mclient.Publish(p)
+func (a *API) publish(b stream.Bundle) error {
+	log.Println("publish a bundle:", b)
+	return a.mclient.Publish(b)
 }
 
 // an old example of creating a torrent

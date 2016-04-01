@@ -18,4 +18,9 @@
             "dht.port": 6001
         }
     ]
+    "raft": {
+        "single.master.mode": false,
+        "data.dir": "/tmp/raft3",
+        "bind.address": "127.0.0.1:6002"
+    }
 }

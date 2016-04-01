@@ -1,5 +1,5 @@
 {
-    "api.bind.address": "0.0.0.0:2000",
+    "api.bind.address": "127.0.0.1:2000",
     "torrent.bind.address": "0.0.0.0:2001",
     "data.dir": "/tmp/agnt2/data",
     "master.peers" : [
