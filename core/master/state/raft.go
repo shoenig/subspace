@@ -4,15 +4,14 @@ package state
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/hashicorp/raft"
 	"github.com/hashicorp/raft-boltdb"
 	"github.com/shoenig/subspace/core/common/stream"
+	"github.com/shoenig/toolkit"
 )
 
 const (
@@ -53,7 +52,7 @@ func NewMyRaft(leader bool, rcfg Config) (*MyRaft, error) {
 	}
 
 	boltPath := filepath.Join(rcfg.DataDir, "boltdb")
-	if err := touchDB(boltPath); err != nil {
+	if _, err := toolkit.Touch(boltPath, true); err != nil {
 		return nil, err
 	}
 	boltstore, err := raftboltdb.NewBoltStore(boltPath)
@@ -98,49 +97,6 @@ func NewMyRaft(leader bool, rcfg Config) (*MyRaft, error) {
 		raft:      raft,
 		boltstore: boltstore,
 	}, nil
-}
-
-// filesystems are the best
-func touchDB(boltpath string) error {
-	base := filepath.Dir(boltpath)
-	if err := os.MkdirAll(base, 0700); err != nil {
-		return err
-	}
-
-	// try to touch the file
-	touch := os.Chtimes(boltpath, time.Now(), time.Now())
-	if touch != nil && strings.Contains(touch.Error(), "no such file") {
-		log.Println("will create new boltdb at", boltpath)
-
-		// create + fsync + close the boltdb file
-		f, err := os.OpenFile(boltpath, os.O_CREATE, 0600)
-		if err != nil {
-			return err
-		}
-		if err := f.Sync(); err != nil {
-			return err
-		}
-		if err := f.Close(); err != nil {
-			return err
-		}
-
-		// fsync + close the parent directory
-		d, err := os.Open(base)
-		if err != nil {
-			return err
-		}
-		if err := d.Sync(); err != nil {
-			return err
-		}
-		return d.Close()
-
-	} else if touch != nil {
-		// some other error occured
-		return touch
-	}
-
-	log.Println("will use existing boltdb at", boltpath)
-	return nil
 }
 
 func (r *MyRaft) apply(action Action) error {
