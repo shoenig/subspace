@@ -5,6 +5,7 @@ package state
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/hashicorp/raft"
@@ -16,6 +17,13 @@ const (
 	timeout = 10 * time.Second // todo, tuneable?
 )
 
+// Config allows for fine-tuning how hashicorp/raft will operate.
+type Config struct {
+	BindAddress string `json:"bind.address"`
+	DataDir     string `json:"data.dir"`
+	SingleMode  bool   `json:"single.master.mode"`
+}
+
 // MyRaft is a wrapper around raft for storing the expected state of things.
 type MyRaft struct {
 	raft *raft.Raft
@@ -26,7 +34,7 @@ type MyRaft struct {
 }
 
 // NewMyRaft creates a new store.
-func NewMyRaft() (*MyRaft, error) {
+func NewMyRaft(leader bool, rcfg Config) (*MyRaft, error) {
 	rconfig := &raft.Config{
 		HeartbeatTimeout:           1 * time.Second,
 		ElectionTimeout:            1 * time.Second,
@@ -37,33 +45,36 @@ func NewMyRaft() (*MyRaft, error) {
 		TrailingLogs:               10240,
 		SnapshotInterval:           120 * time.Second,
 		SnapshotThreshold:          8192,
-		EnableSingleNode:           false,
+		EnableSingleNode:           rcfg.SingleMode,
 		LeaderLeaseTimeout:         500 * time.Millisecond,
-		StartAsLeader:              false,
+		StartAsLeader:              leader,
 	}
 
-	boltstore, err := raftboltdb.NewBoltStore("/todo")
+	boltPath := filepath.Join(rcfg.DataDir, "boltdb")
+	boltstore, err := raftboltdb.NewBoltStore(boltPath)
 	if err != nil {
 		return nil, err
 	}
 
-	filestore, err := raft.NewFileSnapshotStore("/todo", 1, os.Stdout)
+	snapPath := filepath.Join(rcfg.DataDir, "snaps")
+	filestore, err := raft.NewFileSnapshotStore(snapPath, 1, os.Stdout)
 	if err != nil {
 		return nil, err
 	}
 
 	transport, err := raft.NewTCPTransport(
-		"0.0.0.0:0",   // bind address
-		nil,           // advertise address
-		0,             // maxPool (unused)
-		5*time.Second, // timeout
-		os.Stdout,     // debug log file
+		rcfg.BindAddress, // bind address
+		nil,              // advertise address
+		0,                // maxPool (unused)
+		5*time.Second,    // timeout
+		os.Stdout,        // debug log file
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	peerstore := raft.NewJSONPeers("/todo", transport)
+	peerPath := filepath.Join(rcfg.DataDir, "peers")
+	peerstore := raft.NewJSONPeers(peerPath, transport)
 
 	raft, err := raft.NewRaft(
 		rconfig,    // raft config

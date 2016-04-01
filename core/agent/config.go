@@ -9,6 +9,8 @@ import (
 	"github.com/shoenig/subspace/core/config"
 )
 
+// MustLoadConfig will load all the options of Config from the file
+// specified by filename. Any error encountered will be fatal.
 func MustLoadConfig(filename string) *Config {
 	var cfg Config
 	if err := config.ReadConfig(filename, &cfg); err != nil {
@@ -17,11 +19,11 @@ func MustLoadConfig(filename string) *Config {
 	return &cfg
 }
 
+// Config represents the available runtime options.
 type Config struct {
+	Masters         config.Masters `json:"masters"`
 	APIBindAddr     string         `json:"api.bind.address"`
 	TorrentBindAddr string         `json:"torrent.bind.address"`
-	DataDir         string         `json:"data.dir"`
-	Masters         config.Masters `json:"master.peers"`
 }
 
 func (c *Config) String() string {

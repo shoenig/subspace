@@ -10,6 +10,6 @@ import (
 func main() {
 	filename := config.MustParseFlags()
 	config := master.MustLoadConfig(filename)
-	server := master.NewServer(config)
+	server := master.NewMaster(config)
 	server.Start()
 }

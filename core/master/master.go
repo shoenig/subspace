@@ -8,31 +8,41 @@ import (
 	"time"
 
 	"github.com/anacrolix/torrent/dht"
+	"github.com/shoenig/subspace/core/master/state"
 )
 
-type Server struct {
+// Master does things.
+type Master struct {
 	config *Config
+	raft   *state.MyRaft
 }
 
-func NewServer(config *Config) *Server {
-	return &Server{
+// NewMaster creates a Master which does things.
+func NewMaster(config *Config) *Master {
+	return &Master{
 		config: config,
 	}
 }
 
-func (s *Server) Start() {
+// Start causes the Master to do things.s
+func (s *Master) Start() {
 	log.Println("-- subspace-master is starting --")
 	log.Println("master config is", s.config)
 
+	// -- startup dht --
 	dhtServer, err := dht.NewServer(&dht.ServerConfig{
 		Addr: s.config.DHTBindAddr,
 	})
-
 	if err != nil {
 		log.Fatal("failed to start dht server:", err)
 	}
-
 	log.Println("dht server is", dhtServer)
+
+	// -- startup raft --
+	s.raft, err = state.NewMyRaft(true, s.config.Raft) // todo, bootstrap flag
+	if err != nil {
+		log.Fatal("failed to start raft:", err)
+	}
 
 	for range time.Tick(3 * time.Second) {
 		log.Println(dhtStats(dhtServer))

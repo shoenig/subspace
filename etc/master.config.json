@@ -1,12 +1,16 @@
 {
     "api.bind.address": "0.0.0.0:4000",
     "dht.bind.address": "0.0.0.0:4001",
-    "master.peers" : [
+    "masters" : [
         {
             "host": "127.0.0.1",
             "api.port": 4000,
             "dht.port": 4001
         }
     ],
-    "single.master.mode": true
+    "raft": {
+        "single.master.mode": true,
+        "data.dir": "/tmp/raft",
+        "bind.address": "127.0.0.1:4004"
+    }
 }
