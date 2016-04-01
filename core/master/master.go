@@ -25,9 +25,10 @@ func NewMaster(config *Config) *Master {
 }
 
 // Start causes the Master to do things.s
-func (s *Master) Start() {
+func (s *Master) Start(bootstrap bool) {
 	log.Println("-- subspace-master is starting --")
 	log.Println("master config is", s.config)
+	log.Println("master will force-start as leader:", bootstrap)
 
 	// -- startup dht --
 	dhtServer, err := dht.NewServer(&dht.ServerConfig{
@@ -39,7 +40,7 @@ func (s *Master) Start() {
 	log.Println("dht server is", dhtServer)
 
 	// -- startup raft --
-	s.raft, err = state.NewMyRaft(true, s.config.Raft) // todo, bootstrap flag
+	s.raft, err = state.NewMyRaft(bootstrap, s.config.Raft)
 	if err != nil {
 		log.Fatal("failed to start raft:", err)
 	}
