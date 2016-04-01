@@ -111,8 +111,8 @@ func touchDB(boltpath string) error {
 	touch := os.Chtimes(boltpath, time.Now(), time.Now())
 	if touch != nil && strings.Contains(touch.Error(), "no such file") {
 		log.Println("will create new boltdb at", boltpath)
-		// we need to create the boltdb file and fsync everything
-		// fsync the boltdb file
+
+		// create + fsync + close the boltdb file
 		f, err := os.OpenFile(boltpath, os.O_CREATE, 0600)
 		if err != nil {
 			return err
@@ -124,7 +124,7 @@ func touchDB(boltpath string) error {
 			return err
 		}
 
-		// fsync the parent directory
+		// fsync + close the parent directory
 		d, err := os.Open(base)
 		if err != nil {
 			return err
@@ -133,7 +133,9 @@ func touchDB(boltpath string) error {
 			return err
 		}
 		return d.Close()
+
 	} else if touch != nil {
+		// some other error occured
 		return touch
 	}
 
