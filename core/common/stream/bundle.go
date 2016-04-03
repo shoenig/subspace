@@ -4,6 +4,7 @@ package stream
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -34,4 +35,14 @@ func (b Bundle) JSON() (string, error) {
 		return "", err
 	}
 	return string(bs), nil
+}
+
+func (b Bundle) valid() error {
+	if err := b.Info.valid(); err != nil {
+		return err
+	}
+	if b.Path == "" {
+		return fmt.Errorf("bundle cannot have empty path")
+	}
+	return nil
 }

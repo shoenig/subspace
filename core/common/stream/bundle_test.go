@@ -9,58 +9,71 @@ import (
 )
 
 func Test_ValidateBundle_no_name(t *testing.T) {
-	require.Error(t, ValidateBundle(Bundle{
-		Name:    "",
+	require.Error(t, Bundle{
+		Info: Info{
+			Name:  "",
+			Owner: "devops",
+		},
 		Path:    "/tmp/abc",
-		Owner:   "devops",
 		Comment: "a nice little comment",
-	}))
+	}.valid())
 }
 
 func Test_ValidateBundle_bad_name(t *testing.T) {
-	require.Error(t, ValidateBundle(Bundle{
-		Name:    "MrBigglesworth",
+	require.Error(t, Bundle{
+		Info: Info{
+			Name:  "MrBigglesworth",
+			Owner: "devops",
+		},
 		Path:    "/tmp/abc",
-		Owner:   "devops",
 		Comment: "a nice little comment",
-	}))
+	}.valid())
 }
 
 func Test_ValidateBundle_no_path(t *testing.T) {
-	require.Error(t, ValidateBundle(Bundle{
-		Name:    "foobar",
+	require.Error(t, Bundle{
+		Info: Info{
+			Name:  "foobar",
+			Owner: "devops",
+		},
 		Path:    "",
-		Owner:   "devops",
 		Comment: "a nice little comment",
-	}))
+	}.valid())
 }
 
 func Test_ValidateBundle_bad_owner(t *testing.T) {
-	require.Error(t, ValidateBundle(Bundle{
-		Name:    "foobar",
+	require.Error(t, Bundle{
+		Info: Info{
+			Name:  "foobar",
+			Owner: "dev.ops",
+		},
 		Path:    "/tmp/abc",
-		Owner:   "dev.ops",
 		Comment: "a nice little comment",
-	}))
+	}.valid())
 }
 
 func Test_ValidateBundle_ok(t *testing.T) {
-	require.NoError(t, ValidateBundle(Bundle{
-		Name:    "foobar",
+	require.NoError(t, Bundle{
+		Info: Info{
+			Name:  "foobar",
+			Owner: "devops",
+		},
 		Path:    "/tmp/abc",
-		Owner:   "devops",
 		Comment: "",
-	}))
+	}.valid())
 }
 
 func Test_String(t *testing.T) {
 	b := Bundle{
-		Name:    "foobar",
+		Info: Info{
+			Name:  "foobar",
+			Owner: "devops",
+		},
 		Path:    "/tmp/abc",
-		Owner:   "devops",
 		Comment: "a nice little comment",
 	}
-	str := b.String()
+	str, err := b.JSON()
+	require.NoError(t, err)
 	require.Contains(t, str, "foobar")
 	require.Contains(t, str, "/tmp/abc")
 	require.Contains(t, str, "devops")
