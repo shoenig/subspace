@@ -78,53 +78,11 @@ func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
 // given a Bundle, Torrentify the content, publish a Pack
 func (a *API) publish(b stream.Bundle) error {
 	log.Println("publish a bundle:", b)
-	mi, err := common.Torrentify(a.Masters, b, 4)
+	mi, err := common.Torrentify(a.masters, b, 4)
 	if err != nil {
 		return err
 	}
 	magnet := torrent.Magnetize(mi)
-	pack := NewPack(b, magnet)
+	pack := stream.NewPack(b, magnet.String())
 	return a.mclient.Publish(pack)
 }
-
-// an old example of creating a torrent
-
-// func (a *API) Create(w http.ResponseWriter, r *http.Request) {
-// 	var bundle common.Bundle
-// 	decoder := json.NewDecoder(r.Body)
-// 	if err := decoder.Decode(&bundle); err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	if err := common.ValidateBundle(bundle); err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	log.Println("/v1/create with name:", bundle.Name, "owner:", bundle.Owner)
-
-// 	minfo, err := a.create(bundle)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	w.WriteHeader(http.StatusOK)
-// 	s := fmt.Sprintf("created torrent: %s\n", minfo.Info.Name)
-// 	w.Write([]byte(s))
-// }
-
-// func (a *API) create(bundle common.Bundle) (*metainfo.MetaInfo, error) {
-// 	minfo, err := common.Torrentify(a.masters, bundle, 4)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	// lets check out the metainfo
-// 	log.Println("made torrent ...")
-// 	log.Println("info.Comment", minfo.Comment)
-// 	log.Println("info.CreatedBy", minfo.CreatedBy)
-// 	log.Println("info.CreationDate", minfo.CreationDate)
-// 	return minfo, nil
-// }

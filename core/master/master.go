@@ -5,7 +5,6 @@ package master
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/anacrolix/torrent/dht"
 	"github.com/shoenig/subspace/core/master/state"
@@ -25,14 +24,14 @@ func NewMaster(config *Config) *Master {
 }
 
 // Start causes the Master to do things.
-func (s *Master) Start(bootstrap bool) {
+func (m *Master) Start(bootstrap bool) {
 	log.Println("-- subspace-master is starting --")
-	log.Println("master config is", s.config)
+	log.Println("master config is", m.config)
 	log.Println("master will force-start as leader:", bootstrap)
 
 	// -- startup dht --
 	dhtServer, err := dht.NewServer(&dht.ServerConfig{
-		Addr: s.config.DHTBindAddr,
+		Addr: m.config.DHTBindAddr,
 	})
 	if err != nil {
 		log.Fatal("failed to start dht server:", err)
@@ -40,14 +39,14 @@ func (s *Master) Start(bootstrap bool) {
 	log.Println("dht server is", dhtServer)
 
 	// -- startup raft --
-	s.raft, err = state.NewMyRaft(bootstrap, s.config.Raft)
+	m.raft, err = state.NewMyRaft(bootstrap, m.config.Raft)
 	if err != nil {
 		log.Fatal("failed to start raft:", err)
 	}
 
-	for range time.Tick(3 * time.Second) {
-		log.Println(dhtStats(dhtServer))
-	}
+	api := apiServer(m.config.APIBindAddr)
+	log.Fatal(api.ListenAndServe())
+
 }
 
 func dhtStats(dht *dht.Server) string {

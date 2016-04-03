@@ -25,9 +25,10 @@ func (m Masters) DHT() []string {
 // A MasterPeer is a static, all-knowing entity that all clients know about so that they
 // can join the swarm and make API requests.
 type MasterPeer struct {
-	Host    string `json:"host"`
-	APIPort int    `json:"api.port"`
-	DHTPort int    `json:"dht.port"`
+	Host          string `json:"host"`
+	APIPort       int    `json:"api.port"`
+	APIDisableTLS bool   `json:"api.disable.tls"`
+	DHTPort       int    `json:"dht.port"`
 }
 
 // DHT returns the address for torrent and swarm activity of p.
@@ -37,7 +38,11 @@ func (p MasterPeer) DHT() string {
 
 // API returns the address for clients to submit api requests.
 func (p MasterPeer) API(endpoint string) string {
-	return fmt.Sprintf("%s:%d/%s", p.Host, p.APIPort, endpoint)
+	protocol := "https"
+	if p.APIDisableTLS {
+		protocol = "http"
+	}
+	return fmt.Sprintf("%s://%s:%d/%s", protocol, p.Host, p.APIPort, endpoint)
 }
 
 // MustParseFlags parses the command line flags and returns the path to a config file.

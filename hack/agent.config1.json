@@ -6,6 +6,7 @@
         {
             "host": "127.0.0.1",
             "api.port": 4000,
+            "api.disable.tls": true,
             "dht.port": 4001
         }
     ]
