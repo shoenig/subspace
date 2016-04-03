@@ -33,6 +33,7 @@ func NewClient(masters config.Masters) *Client {
 
 // CreateStream is used for sending a Stream creation request.
 func (c *Client) CreateStream(creation stream.Creation) error {
+	log.Println("master.Client create stream:", creation)
 	js, err := creation.JSON()
 	if err != nil {
 		return err
@@ -53,7 +54,9 @@ func (c *Client) Publish(pack stream.Pack) error {
 func (c *Client) doPOST(endpoint, body string) error {
 	for _, master := range c.masters {
 		r := strings.NewReader(body)
-		resp, err := c.client.Post(master.API(endpoint), "application/json", r)
+		url := master.API(endpoint)
+		log.Println("client attempt POST to", url)
+		resp, err := c.client.Post(url, "application/json", r)
 		if err != nil {
 			log.Println("post to", master, "failed:", err)
 			continue

@@ -34,6 +34,7 @@ type API struct {
 
 // CreateStream is the handler of a master that will actually create a stream.
 func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
+	println("master create stream")
 	creation, err := stream.UnpackCreation(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
