@@ -74,6 +74,7 @@ func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// given a Bundle, Torrentify the content, publish a Pack
 func (a *API) publish(b stream.Bundle) error {
 	log.Println("publish a bundle:", b)
 	return a.mclient.Publish(b)

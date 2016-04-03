@@ -79,3 +79,21 @@ func Test_String(t *testing.T) {
 	require.Contains(t, str, "devops")
 	require.Contains(t, str, "a nice little comment")
 }
+
+func Test_Bundle_JSON(t *testing.T) {
+	p := Pack{
+		Bundle: Bundle{
+			Info: Info{
+				Name:  "foobar",
+				Owner: "devops",
+			},
+			Path:    "/tmp/abc",
+			Comment: "a nice little comment",
+		},
+		MagnetURI: "magnet:?xt=urn:btih:36719ba2cecf9f3bd7c5abfb7a88e939611b536c&dn=bootstrap.dat&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&",
+	}
+
+	js, err := p.JSON()
+	require.NoError(t, err, "pack.JSON failed with error", err)
+	t.Log("pack", js)
+}

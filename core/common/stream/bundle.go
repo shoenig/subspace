@@ -8,6 +8,20 @@ import (
 	"io"
 )
 
+// A Pack is a Bundle + MagnetURI for its contents.
+type Pack struct {
+	Bundle
+	MagnetURI string `json:"magnet"`
+}
+
+func (p Pack) JSON() (string, error) {
+	bs, err := json.Marshal(p)
+	if err != nil {
+		return "", err
+	}
+	return string(bs), nil
+}
+
 // Bundle represents the publication of a new generation of content on a Stream.
 type Bundle struct {
 	Info

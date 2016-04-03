@@ -40,9 +40,9 @@ func (c *Client) CreateStream(creation stream.Creation) error {
 	return c.doPOST("/v1/stream/create", js)
 }
 
-// Publish is used to announce the availability of a new Bundle.
-func (c *Client) Publish(bundle stream.Bundle) error {
-	js, err := bundle.JSON()
+// Publish is used to announce the availability of a new Pack.
+func (c *Client) Publish(pack stream.Pack) error {
+	js, err := pack.JSON()
 	if err != nil {
 		return err
 	}
