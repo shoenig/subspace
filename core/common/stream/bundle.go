@@ -14,6 +14,13 @@ type Pack struct {
 	MagnetURI string `json:"magnet"`
 }
 
+func NewPack(b Bundle, magnet string) Pack {
+	return Pack{
+		Bundle:    b,
+		MagnetURI: magnet,
+	}
+}
+
 func (p Pack) JSON() (string, error) {
 	bs, err := json.Marshal(p)
 	if err != nil {

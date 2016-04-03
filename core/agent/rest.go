@@ -9,6 +9,7 @@ import (
 
 	"github.com/anacrolix/torrent"
 	"github.com/gorilla/mux"
+	"github.com/shoenig/subspace/core/common"
 	"github.com/shoenig/subspace/core/common/stream"
 	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/master"
@@ -77,7 +78,13 @@ func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
 // given a Bundle, Torrentify the content, publish a Pack
 func (a *API) publish(b stream.Bundle) error {
 	log.Println("publish a bundle:", b)
-	return a.mclient.Publish(b)
+	mi, err := common.Torrentify(a.Masters, b, 4)
+	if err != nil {
+		return err
+	}
+	magnet := torrent.Magnetize(mi)
+	pack := NewPack(b, magnet)
+	return a.mclient.Publish(pack)
 }
 
 // an old example of creating a torrent
