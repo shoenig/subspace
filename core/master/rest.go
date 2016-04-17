@@ -12,24 +12,30 @@ import (
 	"github.com/shoenig/subspace/core/common/stream"
 )
 
-func apiServer(address string) *http.Server {
+func apiServer(address string, store Store) *http.Server {
 	return &http.Server{
 		Addr:         address,
-		Handler:      router(),
+		Handler:      router(store),
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
 }
 
-func router() *mux.Router {
+func router(store Store) *mux.Router {
 	r := mux.NewRouter()
-	a := &API{}
-	r.HandleFunc("/v1/stream/create", a.CreateStream).Methods("POST")
+	api := NewAPI(store)
+	r.HandleFunc("/v1/stream/create", api.CreateStream).Methods("POST")
 	return r
 }
 
 // API is the api handler for a master.
 type API struct {
+	store Store
+}
+
+// NewAPI creates a new API backed by store.
+func NewAPI(store Store) *API {
+	return &API{store: store}
 }
 
 // CreateStream is the handler of a master that will actually create a stream.

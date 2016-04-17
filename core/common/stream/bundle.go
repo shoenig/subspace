@@ -8,12 +8,14 @@ import (
 	"io"
 )
 
-// A Pack is a Bundle + MagnetURI for its contents.
+// A Pack is a Bundle + MagnetURI for its contents, after a torrent
+// of the content has been created and is ready for seeding.
 type Pack struct {
 	Bundle
 	MagnetURI string `json:"magnet"`
 }
 
+// NewPack creates a new Pack.
 func NewPack(b Bundle, magnet string) Pack {
 	return Pack{
 		Bundle:    b,
@@ -21,6 +23,7 @@ func NewPack(b Bundle, magnet string) Pack {
 	}
 }
 
+// JSON returns the json representation of a Pack.
 func (p Pack) JSON() (string, error) {
 	bs, err := json.Marshal(p)
 	if err != nil {

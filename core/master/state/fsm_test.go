@@ -17,9 +17,9 @@ func Test_MyFSM_AddCopyDelete(t *testing.T) {
 
 	// add 3 streams
 	fsm.AddStreams(
-		stream.New("stream1", "devops"),
-		stream.New("stream2", "releng"),
-		stream.New("stream3", "delivery"),
+		stream.NewStream("stream1", "devops"),
+		stream.NewStream("stream2", "releng"),
+		stream.NewStream("stream3", "delivery"),
 	)
 
 	require.Equal(t, 3, len(fsm.streams))
@@ -39,8 +39,8 @@ func Test_MyFSM_AddCopyDelete(t *testing.T) {
 
 	// delete 2 of the 3 streams
 	fsm.DeleteStreams(
-		stream.New("stream3", "delivery"),
-		stream.New("stream1", "devops"),
+		stream.NewStream("stream3", "delivery"),
+		stream.NewStream("stream1", "devops"),
 	)
 	require.Equal(t, 1, len(fsm.streams))
 	require.Contains(t, fsm.streams, "stream2")
@@ -52,10 +52,10 @@ func Test_MyFSM_Do_Streams(t *testing.T) {
 	action1 := Action{
 		Command: AddStreams,
 		Streams: []stream.Stream{
-			stream.New("stream1", "devops"),
-			stream.New("stream2", "sem"),
-			stream.New("stream3", "squall"),
-			stream.New("stream4", "ops"),
+			stream.NewStream("stream1", "devops"),
+			stream.NewStream("stream2", "sem"),
+			stream.NewStream("stream3", "squall"),
+			stream.NewStream("stream4", "ops"),
 		},
 	}
 
@@ -69,8 +69,8 @@ func Test_MyFSM_Do_Streams(t *testing.T) {
 	action2 := Action{
 		Command: DeleteStreams,
 		Streams: []stream.Stream{
-			stream.New("stream1", ""),
-			stream.New("stream4", ""),
+			stream.NewStream("stream1", ""),
+			stream.NewStream("stream4", ""),
 		},
 	}
 
@@ -98,7 +98,7 @@ func Test_MyFSM_ApplySnapshot_Streams(t *testing.T) {
 
 	data, err := json.Marshal(Action{
 		Command: AddStreams,
-		Streams: []stream.Stream{stream.New("stream1", "devops")},
+		Streams: []stream.Stream{stream.NewStream("stream1", "devops")},
 	})
 	require.NoError(t, err, "json marshal log failed")
 
@@ -119,7 +119,7 @@ func Test_MyFSM_Restore_Streams(t *testing.T) {
 	// create a fresh fsm with no data
 	fsm := NewMyFSM()
 
-	data, err := json.Marshal([]stream.Stream{stream.New("stream1", "devops")})
+	data, err := json.Marshal([]stream.Stream{stream.NewStream("stream1", "devops")})
 	require.NoError(t, err, "json marshal log failed")
 
 	snap := byteReadCloser{

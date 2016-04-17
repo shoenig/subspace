@@ -44,7 +44,9 @@ func (m *Master) Start(bootstrap bool) {
 		log.Fatal("failed to start raft:", err)
 	}
 
-	api := apiServer(m.config.APIBindAddr)
+	store := NewRaftStore(m.raft)
+
+	api := apiServer(m.config.APIBindAddr, store)
 	log.Fatal(api.ListenAndServe())
 
 }

@@ -23,16 +23,12 @@ func (i Info) valid() error {
 }
 
 // A Stream represents the flow of things that can be downloaded.
-type Stream struct {
-	Info
-}
+type Stream Info
 
-// New creates a new stream with the given name and owner.
-func New(name, owner string) Stream {
+// NewStream creates a Stream with the given name and owner.
+func NewStream(name, owner string) Stream {
 	return Stream{
-		Info: Info{
-			Name:  name,
-			Owner: owner,
-		},
+		Name:  name,
+		Owner: owner,
 	}
 }

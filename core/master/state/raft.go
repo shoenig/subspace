@@ -28,6 +28,7 @@ type Config struct {
 // MyRaft is a wrapper around raft for storing the expected state of things.
 type MyRaft struct {
 	raft *raft.Raft
+	fsm  *MyFSM
 
 	// hold on to these so we can close them on graceful shutdown
 	transport *raft.NetworkTransport
@@ -80,14 +81,16 @@ func NewMyRaft(leader bool, rcfg Config) (*MyRaft, error) {
 	peerPath := filepath.Join(rcfg.DataDir, "peers")
 	peerstore := raft.NewJSONPeers(peerPath, transport)
 
+	fsm := NewMyFSM()
+
 	raft, err := raft.NewRaft(
-		rconfig,    // raft config
-		NewMyFSM(), // fsm implementation
-		boltstore,  // raft log store
-		boltstore,  // raft stable store
-		filestore,  // snapshot store
-		peerstore,  // peer store (human editable)
-		transport,  // the internet
+		rconfig,   // raft config
+		fsm,       // fsm implementation
+		boltstore, // raft log store
+		boltstore, // raft stable store
+		filestore, // snapshot store
+		peerstore, // peer store (human editable)
+		transport, // the internet
 	)
 	if err != nil {
 		return nil, err
@@ -95,6 +98,7 @@ func NewMyRaft(leader bool, rcfg Config) (*MyRaft, error) {
 
 	return &MyRaft{
 		raft:      raft,
+		fsm:       fsm,
 		boltstore: boltstore,
 	}, nil
 }
@@ -122,6 +126,11 @@ func (r *MyRaft) DeleteStreams(streams ...stream.Stream) error {
 		Command: DeleteStreams,
 		Streams: streams,
 	})
+}
+
+// ContainsStream returns true if the raft contains the stream of the given name.
+func (r *MyRaft) ContainsStream(name string) bool {
+	return r.fsm.ContainsStream(name)
 }
 
 // Close will attempt to gracefully stop the raft. Although we
