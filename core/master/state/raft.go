@@ -133,6 +133,11 @@ func (r *MyRaft) ContainsStream(name string) bool {
 	return r.fsm.ContainsStream(name)
 }
 
+// GetStreams returns a copy of the list of streams from the raft.
+func (r *MyRaft) GetStreams() []stream.Stream {
+	return r.fsm.CopyStreams()
+}
+
 // Close will attempt to gracefully stop the raft. Although we
 // must be totally resiliant to failure at anytime, a controlled
 // shutdown allows remaining raft members to recover more quickley.

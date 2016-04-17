@@ -32,13 +32,13 @@ func NewClient(masters config.Masters) *Client {
 }
 
 // CreateStream is used for sending a Stream creation request.
-func (c *Client) CreateStream(creation stream.Creation) error {
-	log.Println("master.Client create stream:", creation)
-	js, err := creation.JSON()
+func (c *Client) CreateStream(stream stream.Stream) error {
+	log.Println("master.Client create stream:", stream)
+	js, err := stream.JSON()
 	if err != nil {
 		return err
 	}
-	return c.doPOST("/v1/stream/create", js)
+	return c.doPOST("/v1/streams/create", js)
 }
 
 // Publish is used to announce the availability of a new Pack.
@@ -47,7 +47,7 @@ func (c *Client) Publish(pack stream.Pack) error {
 	if err != nil {
 		return err
 	}
-	return c.doPOST("/v1/stream/publish", js)
+	return c.doPOST("/v1/streams/publish", js)
 }
 
 // attempt to POST some json to the masters

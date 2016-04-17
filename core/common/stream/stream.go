@@ -2,7 +2,11 @@
 
 package stream
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+)
 
 // Info represents the fundamental identification of a Stream
 type Info struct {
@@ -31,4 +35,25 @@ func NewStream(name, owner string) Stream {
 		Name:  name,
 		Owner: owner,
 	}
+}
+
+// UnpackStream reads from r to unpack a Stream.
+func UnpackStream(r io.Reader) (Stream, error) {
+	decoder := json.NewDecoder(r)
+	var stream Stream
+	if err := decoder.Decode(&stream); err != nil {
+		return Stream{}, err
+	}
+
+	if err := Info(stream).valid(); err != nil {
+		return Stream{}, err
+	}
+
+	return stream, nil
+}
+
+// JSON creates a json compatible representation of s.
+func (s Stream) JSON() (string, error) {
+	bs, err := json.Marshal(s)
+	return string(bs), err
 }

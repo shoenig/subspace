@@ -39,16 +39,16 @@ func (m *Master) Start(bootstrap bool) {
 	log.Println("dht server is", dhtServer)
 
 	// -- startup raft --
-	m.raft, err = state.NewMyRaft(bootstrap, m.config.Raft)
+	raft, err := state.NewMyRaft(bootstrap, m.config.Raft)
 	if err != nil {
 		log.Fatal("failed to start raft:", err)
 	}
 
-	store := NewRaftStore(m.raft)
+	store := NewRaftStore(raft)
 
 	api := apiServer(m.config.APIBindAddr, store)
-	log.Fatal(api.ListenAndServe())
 
+	log.Fatal(api.ListenAndServe())
 }
 
 func dhtStats(dht *dht.Server) string {
