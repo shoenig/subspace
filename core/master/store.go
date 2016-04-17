@@ -15,6 +15,8 @@ type Store interface {
 	CreateStream(stream.Stream) error
 	ContainsStream(string) bool
 	GetStreams() []stream.Stream
+
+	AddPack(stream.Pack) (uint64, error)
 }
 
 // RaftStore is an implemntation of Store based on raft.
@@ -45,4 +47,9 @@ func (s *RaftStore) ContainsStream(name string) bool {
 // GetStreams returns a list of the strams.
 func (s *RaftStore) GetStreams() []stream.Stream {
 	return s.raft.GetStreams()
+}
+
+func (s *RaftStore) AddPack(pack stream.Pack) (uint64, error) {
+	// add pack
+	return 0, nil
 }

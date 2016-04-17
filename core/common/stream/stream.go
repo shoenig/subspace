@@ -26,7 +26,9 @@ func (i Info) valid() error {
 	return nil
 }
 
-// A Stream represents the flow of things that can be downloaded.
+// A Stream represents a flow of Bundles that can be downloaded. Each
+// new Bundle in a stream is a generation, distributed by a new underlying
+// torrent.
 type Stream Info
 
 // NewStream creates a Stream with the given name and owner.

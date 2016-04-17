@@ -4,7 +4,6 @@ package master
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
@@ -25,7 +24,8 @@ func router(store Store) *mux.Router {
 	r := mux.NewRouter()
 	api := NewAPI(store)
 	r.HandleFunc("/v1/streams", api.GetStreams).Methods("GET")
-	r.HandleFunc("/v1/streams/create", api.CreateStream).Methods("POST")
+	r.HandleFunc("/v1/streams/create", api.CreateStream).Methods("PUT")
+	r.HandleFunc("/v1/packs/new", api.AddPack).Methods("POST")
 	return r
 }
 
@@ -65,7 +65,7 @@ func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.createStream(s); err != nil {
+	if err := a.store.CreateStream(s); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -73,8 +73,20 @@ func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(201)
 }
 
-func (a *API) createStream(c stream.Stream) error {
-	log.Println("master will create stream:", c)
+// AddPack receives a submitted Pack, which will be made available on the
+// stream for clients of agents to download via torrent.
+func (a *API) AddPack(w http.ResponseWriter, r *http.Request) {
+	println("master add pack handler")
 
-	return a.store.CreateStream(c)
+	pack, err := stream.UnpackPack(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// do logic stuff making pack available
+
+	// add a pack of stuff, return new generation number
+
+	a.store.AddPack(pack)
 }

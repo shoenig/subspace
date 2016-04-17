@@ -19,8 +19,9 @@ import (
 type MyFSM struct {
 	lock sync.RWMutex
 
-	// the ultimate source of truth
-	streams map[string]stream.Stream
+	// -- the ultimate source of truth --
+	streams map[string]stream.Stream          // stream.Name -> stream
+	packs   map[string]map[uint64]stream.Pack // stream.Name -> packs (by generation)
 }
 
 // NewMyFSM creates a new MyFSM.
