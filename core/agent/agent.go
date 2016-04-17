@@ -36,7 +36,6 @@ func (a *Agent) Start() {
 		PeerID:               GeneratePeerID(""),
 		DisableUTP:           false,
 		DisableTCP:           false,
-		NoDefaultBlocklist:   true,
 		ConfigDir:            "", // not used
 		DisableMetainfoCache: true,
 		DisableEncryption:    true, // todo false

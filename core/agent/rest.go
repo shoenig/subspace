@@ -82,7 +82,7 @@ func (a *API) publish(b stream.Bundle) error {
 	if err != nil {
 		return err
 	}
-	magnet := torrent.Magnetize(mi)
+	magnet := mi.Magnet()
 	pack := stream.NewPack(b, magnet.String())
 	return a.mclient.Publish(pack)
 }
