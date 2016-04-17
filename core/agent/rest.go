@@ -44,19 +44,19 @@ type API struct {
 
 // CreateStream is an endpoint for creating a new stream.
 func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
-	creation, err := stream.UnpackCreation(r.Body)
+	stream, err := stream.UnpackStream(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := a.createStream(creation); err != nil {
+	if err := a.createStream(stream); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func (a *API) createStream(c stream.Creation) error {
+func (a *API) createStream(c stream.Stream) error {
 	log.Println("client create stream:", c)
 	return a.mclient.CreateStream(c)
 }
