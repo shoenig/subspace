@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/raft"
 	"github.com/shoenig/subspace/core/common/stream"
@@ -14,12 +15,13 @@ import (
 
 func Test_MyFSM_AddCopyDelete(t *testing.T) {
 	fsm := NewMyFSM()
+	now := time.Date(2016, 04, 17, 19, 22, 0, 0, time.UTC)
 
 	// add 3 streams
 	fsm.AddStreams(
-		stream.NewStream("stream1", "devops"),
-		stream.NewStream("stream2", "releng"),
-		stream.NewStream("stream3", "delivery"),
+		stream.NewMetadata("stream1", "devops", now),
+		stream.NewMetadata("stream2", "releng", now),
+		stream.NewMetadata("stream3", "delivery", now),
 	)
 
 	require.Equal(t, 3, len(fsm.streams))
@@ -39,8 +41,8 @@ func Test_MyFSM_AddCopyDelete(t *testing.T) {
 
 	// delete 2 of the 3 streams
 	fsm.DeleteStreams(
-		stream.NewStream("stream3", "delivery"),
-		stream.NewStream("stream1", "devops"),
+		stream.NewMetadata("stream3", "delivery", now),
+		stream.NewMetadata("stream1", "devops", now),
 	)
 	require.Equal(t, 1, len(fsm.streams))
 	require.Contains(t, fsm.streams, "stream2")
@@ -48,14 +50,15 @@ func Test_MyFSM_AddCopyDelete(t *testing.T) {
 
 func Test_MyFSM_Do_Streams(t *testing.T) {
 	fsm := NewMyFSM()
+	now := time.Date(2016, 04, 17, 19, 22, 0, 0, time.UTC)
 
 	action1 := Action{
 		Command: AddStreams,
-		Streams: []stream.Stream{
-			stream.NewStream("stream1", "devops"),
-			stream.NewStream("stream2", "sem"),
-			stream.NewStream("stream3", "squall"),
-			stream.NewStream("stream4", "ops"),
+		Streams: []stream.Metadata{
+			stream.NewMetadata("stream1", "devops", now),
+			stream.NewMetadata("stream2", "sem", now),
+			stream.NewMetadata("stream3", "squall", now),
+			stream.NewMetadata("stream4", "ops", now),
 		},
 	}
 
@@ -68,9 +71,9 @@ func Test_MyFSM_Do_Streams(t *testing.T) {
 
 	action2 := Action{
 		Command: DeleteStreams,
-		Streams: []stream.Stream{
-			stream.NewStream("stream1", ""),
-			stream.NewStream("stream4", ""),
+		Streams: []stream.Metadata{
+			stream.NewMetadata("stream1", "", now),
+			stream.NewMetadata("stream4", "", now),
 		},
 	}
 
@@ -95,10 +98,13 @@ func (brc byteReadCloser) Close() error {
 
 func Test_MyFSM_ApplySnapshot_Streams(t *testing.T) {
 	fsm := NewMyFSM()
+	now := time.Date(2016, 04, 17, 19, 24, 0, 0, time.UTC)
 
 	data, err := json.Marshal(Action{
 		Command: AddStreams,
-		Streams: []stream.Stream{stream.NewStream("stream1", "devops")},
+		Streams: []stream.Metadata{
+			stream.NewMetadata("stream1", "devops", now),
+		},
 	})
 	require.NoError(t, err, "json marshal log failed")
 
@@ -118,8 +124,11 @@ func Test_MyFSM_ApplySnapshot_Streams(t *testing.T) {
 func Test_MyFSM_Restore_Streams(t *testing.T) {
 	// create a fresh fsm with no data
 	fsm := NewMyFSM()
+	now := time.Date(2016, 04, 17, 19, 24, 0, 0, time.UTC)
 
-	data, err := json.Marshal([]stream.Stream{stream.NewStream("stream1", "devops")})
+	data, err := json.Marshal([]stream.Metadata{
+		stream.NewMetadata("stream1", "devops", now),
+	})
 	require.NoError(t, err, "json marshal log failed")
 
 	snap := byteReadCloser{

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/shoenig/subspace/core/common/stream"
 	"github.com/stretchr/testify/require"
@@ -16,11 +17,13 @@ func Test_Client_CreateStream(t *testing.T) {
 	a := API{
 		store: &MockStore{},
 	}
+	now := time.Date(2016, 04, 17, 17, 25, 0, 0, time.UTC)
 
 	recorder := httptest.NewRecorder()
-	stream := stream.Stream{
-		Name:  "testsub",
-		Owner: "devops",
+	stream := stream.Metadata{
+		Name:    "testsub",
+		Owner:   "devops",
+		Created: now.Unix(),
 	}
 
 	js, err := stream.JSON()

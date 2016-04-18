@@ -15,10 +15,9 @@ import (
 // operations that may modify the live state - it must be safe to invoke
 // Persist and Release methods with concurrent calls to FSM.Apply.
 type MySnapshot struct {
-	// keep our own copy of the data
+	// create our own copy of the data
 	// keep in mind, this thing needs to be jsonable of all data
-	// (todo, create an addressable wrapper when we add stuff)
-	streams []stream.Stream
+	streams []stream.Metadata
 }
 
 // Persist dumps all necessary state to the WriteCloser sink, and then

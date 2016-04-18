@@ -20,19 +20,19 @@ type MyFSM struct {
 	lock sync.RWMutex
 
 	// -- the ultimate source of truth --
-	streams map[string]stream.Stream          // stream.Name -> stream
-	packs   map[string]map[uint64]stream.Pack // stream.Name -> packs (by generation)
+	streams map[string]stream.Metadata          // stream.Name -> stream
+	packs   map[string]map[uint64]stream.Bundle // stream.Name -> bundles (by generation)
 }
 
 // NewMyFSM creates a new MyFSM.
 func NewMyFSM() *MyFSM {
 	return &MyFSM{
-		streams: make(map[string]stream.Stream),
+		streams: make(map[string]stream.Metadata),
 	}
 }
 
 // AddStreams to consensus storage via the FSM.
-func (fsm *MyFSM) AddStreams(streams ...stream.Stream) {
+func (fsm *MyFSM) AddStreams(streams ...stream.Metadata) {
 	fsm.lock.Lock()
 	defer fsm.lock.Unlock()
 
@@ -40,7 +40,7 @@ func (fsm *MyFSM) AddStreams(streams ...stream.Stream) {
 }
 
 // fsm.lock must be held
-func (fsm *MyFSM) addStreams(streams ...stream.Stream) {
+func (fsm *MyFSM) addStreams(streams ...stream.Metadata) {
 	for _, stream := range streams {
 		fsm.streams[stream.Name] = stream
 	}
@@ -48,7 +48,7 @@ func (fsm *MyFSM) addStreams(streams ...stream.Stream) {
 
 // DeleteStreams from consensus storage via FSM.
 // It is acceptable for each Stream to only have Name set.
-func (fsm *MyFSM) DeleteStreams(streams ...stream.Stream) {
+func (fsm *MyFSM) DeleteStreams(streams ...stream.Metadata) {
 	fsm.lock.Lock()
 	defer fsm.lock.Unlock()
 
@@ -58,8 +58,8 @@ func (fsm *MyFSM) DeleteStreams(streams ...stream.Stream) {
 }
 
 // CopyStreams from consensus storage via FSM.
-func (fsm *MyFSM) CopyStreams() []stream.Stream {
-	streams := make([]stream.Stream, 0, len(fsm.streams))
+func (fsm *MyFSM) CopyStreams() []stream.Metadata {
+	streams := make([]stream.Metadata, 0, len(fsm.streams))
 	fsm.lock.RLock()
 	defer fsm.lock.RUnlock()
 
@@ -115,7 +115,7 @@ func (fsm *MyFSM) Snapshot() (raft.FSMSnapshot, error) {
 func (fsm *MyFSM) Restore(snapshot io.ReadCloser) error {
 	log.Println("fsm restore")
 	decoder := json.NewDecoder(snapshot)
-	var streams []stream.Stream
+	var streams []stream.Metadata
 	if err := decoder.Decode(&streams); err != nil {
 		snapshot.Close() // close no matter what
 		return err
@@ -123,7 +123,7 @@ func (fsm *MyFSM) Restore(snapshot io.ReadCloser) error {
 
 	// reset the whole FSM with the snapshot
 	fsm.lock.Lock()
-	fsm.streams = make(map[string]stream.Stream, len(streams))
+	fsm.streams = make(map[string]stream.Metadata, len(streams))
 	fsm.addStreams(streams...)
 	fsm.lock.Unlock()
 

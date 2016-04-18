@@ -16,6 +16,6 @@ const (
 
 // Action is something to be applied to the FSM.
 type Action struct {
-	Command Command         `json:"command"`
-	Streams []stream.Stream `json:"streams"`
+	Command Command           `json:"command"`
+	Streams []stream.Metadata `json:"streams"`
 }

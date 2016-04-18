@@ -2,18 +2,7 @@
 
 package common
 
-import (
-	"fmt"
-	"log"
-	"os"
-	"path/filepath"
-	"time"
-
-	"github.com/anacrolix/torrent/metainfo"
-	"github.com/shoenig/subspace/core/common/stream"
-	"github.com/shoenig/subspace/core/config"
-)
-
+/*
 func Torrentify(masters config.Masters, bundle stream.Bundle, workers int) (*metainfo.MetaInfo, error) {
 	log.Println("[torrent] setting up the builder")
 	builder := metainfo.Builder{}
@@ -79,3 +68,4 @@ WAIT:
 	// 7) return metainfo on the torrent file we created
 	return metainfo.Load(mtor)
 }
+*/

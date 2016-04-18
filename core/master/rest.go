@@ -59,7 +59,7 @@ func (a *API) GetStreams(w http.ResponseWriter, r *http.Request) {
 func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
 	println("master create stream")
 
-	s, err := stream.UnpackStream(r.Body)
+	s, err := stream.UnpackMetadata(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -78,7 +78,7 @@ func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
 func (a *API) AddPack(w http.ResponseWriter, r *http.Request) {
 	println("master add pack handler")
 
-	pack, err := stream.UnpackPack(r.Body)
+	bundle, err := stream.UnpackBundle(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -88,5 +88,5 @@ func (a *API) AddPack(w http.ResponseWriter, r *http.Request) {
 
 	// add a pack of stuff, return new generation number
 
-	a.store.AddPack(pack)
+	a.store.AddPack(bundle)
 }

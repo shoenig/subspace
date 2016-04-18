@@ -113,7 +113,7 @@ func (r *MyRaft) apply(action Action) error {
 }
 
 // AddStreams to the raft.
-func (r *MyRaft) AddStreams(streams ...stream.Stream) error {
+func (r *MyRaft) AddStreams(streams ...stream.Metadata) error {
 	return r.apply(Action{
 		Command: AddStreams,
 		Streams: streams,
@@ -121,7 +121,7 @@ func (r *MyRaft) AddStreams(streams ...stream.Stream) error {
 }
 
 // DeleteStreams from the raft.
-func (r *MyRaft) DeleteStreams(streams ...stream.Stream) error {
+func (r *MyRaft) DeleteStreams(streams ...stream.Metadata) error {
 	return r.apply(Action{
 		Command: DeleteStreams,
 		Streams: streams,
@@ -134,7 +134,7 @@ func (r *MyRaft) ContainsStream(name string) bool {
 }
 
 // GetStreams returns a copy of the list of streams from the raft.
-func (r *MyRaft) GetStreams() []stream.Stream {
+func (r *MyRaft) GetStreams() []stream.Metadata {
 	return r.fsm.CopyStreams()
 }
 

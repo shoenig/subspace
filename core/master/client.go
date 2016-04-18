@@ -31,8 +31,8 @@ func NewClient(masters config.Masters) *Client {
 	}
 }
 
-// CreateStream is used for sending a Stream creation request.
-func (c *Client) CreateStream(stream stream.Stream) error {
+// CreateStream is used for sending a stream creation request.
+func (c *Client) CreateStream(stream stream.Metadata) error {
 	log.Println("master.Client create stream:", stream)
 	js, err := stream.JSON()
 	if err != nil {
@@ -42,7 +42,7 @@ func (c *Client) CreateStream(stream stream.Stream) error {
 }
 
 // Publish is used to announce the availability of a new Pack.
-func (c *Client) Publish(pack stream.Pack) error {
+func (c *Client) Publish(pack stream.Bundle) error {
 	js, err := pack.JSON()
 	if err != nil {
 		return err

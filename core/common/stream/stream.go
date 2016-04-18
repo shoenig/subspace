@@ -1,61 +1,60 @@
 // Author hoenig
 
+// Package stream contains struct definitions which represent a flow of
+// generational data is to be downloaded via torrent by many clients.
 package stream
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
+	"time"
 )
 
-// Info represents the fundamental identification of a Stream
-type Info struct {
-	Name  string `json:"name"`
-	Owner string `json:"owner"`
+// Metadata represents the fundamental properties of a Stream.
+type Metadata struct {
+	Name    string `json:"name"`
+	Owner   string `json:"owner"`
+	Created int64  `json:"created"`
 }
 
-func (i Info) valid() error {
-	if !ValidNameRe.MatchString(i.Name) {
-		return fmt.Errorf("stream name is bad: '%s'", i.Name)
+// NewMetadata creates a new Metadata.
+func NewMetadata(name, owner string, date time.Time) Metadata {
+	return Metadata{
+		Name:    name,
+		Owner:   owner,
+		Created: date.Unix(),
+	}
+}
+
+// UnpackMetadata reads from r to unpack the metadata of a stream.
+func UnpackMetadata(r io.Reader) (Metadata, error) {
+	decoder := json.NewDecoder(r)
+	var meta Metadata
+	if err := decoder.Decode(&meta); err != nil {
+		return Metadata{}, err
 	}
 
-	if !ValidOwnerRe.MatchString(i.Owner) {
-		return fmt.Errorf("stream owner is bad: '%s'", i.Owner)
+	if err := Metadata(meta).valid(); err != nil {
+		return Metadata{}, err
+	}
+
+	return meta, nil
+}
+
+// JSON creates a json compatible representation of m.
+func (m Metadata) JSON() (string, error) {
+	bs, err := json.Marshal(m)
+	return string(bs), err
+}
+
+func (m Metadata) valid() error {
+	if err := ValidName(m.Name); err != nil {
+		return err
+	}
+
+	if err := ValidOwner(m.Owner); err != nil {
+		return err
 	}
 
 	return nil
-}
-
-// A Stream represents a flow of Bundles that can be downloaded. Each
-// new Bundle in a stream is a generation, distributed by a new underlying
-// torrent.
-type Stream Info
-
-// NewStream creates a Stream with the given name and owner.
-func NewStream(name, owner string) Stream {
-	return Stream{
-		Name:  name,
-		Owner: owner,
-	}
-}
-
-// UnpackStream reads from r to unpack a Stream.
-func UnpackStream(r io.Reader) (Stream, error) {
-	decoder := json.NewDecoder(r)
-	var stream Stream
-	if err := decoder.Decode(&stream); err != nil {
-		return Stream{}, err
-	}
-
-	if err := Info(stream).valid(); err != nil {
-		return Stream{}, err
-	}
-
-	return stream, nil
-}
-
-// JSON creates a json compatible representation of s.
-func (s Stream) JSON() (string, error) {
-	bs, err := json.Marshal(s)
-	return string(bs), err
 }
