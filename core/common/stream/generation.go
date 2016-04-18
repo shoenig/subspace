@@ -30,19 +30,27 @@ func UnpackGeneration(r io.Reader) (Generation, error) {
 }
 
 // JSON returns the json representation of b.
-func (b Generation) JSON() (string, error) {
-	bs, err := json.Marshal(b)
+func (g Generation) JSON() (string, error) {
+	bs, err := json.Marshal(g)
 	if err != nil {
 		return "", err
 	}
 	return string(bs), nil
 }
 
-func (b Generation) valid() error {
-	if err := ValidName(b.Stream); err != nil {
+func (g Generation) String() string {
+	s, err := g.JSON()
+	if err != nil {
+		return "<ERROR>"
+	}
+	return s
+}
+
+func (g Generation) valid() error {
+	if err := ValidName(g.Stream); err != nil {
 		return err
 	}
-	if b.Path == "" {
+	if g.Path == "" {
 		return fmt.Errorf("generation cannot represent empty file path")
 	}
 	return nil

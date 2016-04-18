@@ -25,7 +25,7 @@ func router(store Store) *mux.Router {
 	api := NewAPI(store)
 	r.HandleFunc("/v1/streams", api.AllStreams).Methods("GET")
 	r.HandleFunc("/v1/streams/create", api.NewStream).Methods("PUT")
-	r.HandleFunc("/v1/packs/new", api.NewGeneration).Methods("POST")
+	r.HandleFunc("/v1/streams/publish", api.NewGeneration).Methods("POST")
 	return r
 }
 
@@ -76,7 +76,7 @@ func (a *API) NewStream(w http.ResponseWriter, r *http.Request) {
 // NewGeneration receives a submitted generation, which will be made available on the
 // stream for clients of agents to download via torrent.
 func (a *API) NewGeneration(w http.ResponseWriter, r *http.Request) {
-	println("master new generation handler")
+	println("master new generation published handler")
 
 	gen, err := stream.UnpackGeneration(r.Body)
 	if err != nil {
