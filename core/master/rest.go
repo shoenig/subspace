@@ -23,9 +23,9 @@ func apiServer(address string, store Store) *http.Server {
 func router(store Store) *mux.Router {
 	r := mux.NewRouter()
 	api := NewAPI(store)
-	r.HandleFunc("/v1/streams", api.GetStreams).Methods("GET")
-	r.HandleFunc("/v1/streams/create", api.CreateStream).Methods("PUT")
-	r.HandleFunc("/v1/packs/new", api.AddPack).Methods("POST")
+	r.HandleFunc("/v1/streams", api.AllStreams).Methods("GET")
+	r.HandleFunc("/v1/streams/create", api.NewStream).Methods("PUT")
+	r.HandleFunc("/v1/packs/new", api.NewGeneration).Methods("POST")
 	return r
 }
 
@@ -39,12 +39,12 @@ func NewAPI(store Store) *API {
 	return &API{store: store}
 }
 
-// GetStreams returns a JSON list of all streams.
-func (a *API) GetStreams(w http.ResponseWriter, r *http.Request) {
+// AllStreams returns a JSON list of all streams.
+func (a *API) AllStreams(w http.ResponseWriter, r *http.Request) {
 	println("master get streams handler")
 	w.Header().Set("Content-Type", "application/json")
 
-	streams := a.store.GetStreams()
+	streams := a.store.AllStreams()
 
 	encoder := json.NewEncoder(w)
 	err := encoder.Encode(streams)
@@ -55,8 +55,8 @@ func (a *API) GetStreams(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
-// CreateStream is the handler of a master that will actually create a stream.
-func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
+// NewStream is the handler of a master that will actually create a stream.
+func (a *API) NewStream(w http.ResponseWriter, r *http.Request) {
 	println("master create stream")
 
 	s, err := stream.UnpackMetadata(r.Body)
@@ -65,7 +65,7 @@ func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.store.CreateStream(s); err != nil {
+	if err := a.store.NewStream(s); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -73,12 +73,12 @@ func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(201)
 }
 
-// AddPack receives a submitted Pack, which will be made available on the
+// NewGeneration receives a submitted Pack, which will be made available on the
 // stream for clients of agents to download via torrent.
-func (a *API) AddPack(w http.ResponseWriter, r *http.Request) {
+func (a *API) NewGeneration(w http.ResponseWriter, r *http.Request) {
 	println("master add pack handler")
 
-	bundle, err := stream.UnpackBundle(r.Body)
+	bundle, err := stream.UnpackGeneration(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -88,5 +88,5 @@ func (a *API) AddPack(w http.ResponseWriter, r *http.Request) {
 
 	// add a pack of stuff, return new generation number
 
-	a.store.AddPack(bundle)
+	a.store.NewGeneration(bundle)
 }

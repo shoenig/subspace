@@ -20,8 +20,8 @@ type MyFSM struct {
 	lock sync.RWMutex
 
 	// -- the ultimate source of truth --
-	streams map[string]stream.Metadata          // stream.Name -> stream
-	packs   map[string]map[uint64]stream.Bundle // stream.Name -> bundles (by generation)
+	streams map[string]stream.Metadata              // stream.Name -> stream
+	packs   map[string]map[uint64]stream.Generation // stream.Name -> bundles (by generation)
 }
 
 // NewMyFSM creates a new MyFSM.

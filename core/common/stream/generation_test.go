@@ -9,7 +9,7 @@ import (
 )
 
 func Test_ValidateBundle_no_name(t *testing.T) {
-	require.Error(t, Bundle{
+	require.Error(t, Generation{
 		Stream:  "",
 		Path:    "/tmp/abc",
 		Comment: "a nice little comment",
@@ -17,7 +17,7 @@ func Test_ValidateBundle_no_name(t *testing.T) {
 }
 
 func Test_ValidateBundle_bad_name(t *testing.T) {
-	require.Error(t, Bundle{
+	require.Error(t, Generation{
 		Stream:  "MrBigglesworth",
 		Path:    "/tmp/abc",
 		Comment: "a nice little comment",
@@ -25,7 +25,7 @@ func Test_ValidateBundle_bad_name(t *testing.T) {
 }
 
 func Test_ValidateBundle_no_path(t *testing.T) {
-	require.Error(t, Bundle{
+	require.Error(t, Generation{
 		Stream:  "foobar",
 		Path:    "",
 		Comment: "a nice little comment",
@@ -33,7 +33,7 @@ func Test_ValidateBundle_no_path(t *testing.T) {
 }
 
 func Test_ValidateBundle_ok(t *testing.T) {
-	require.NoError(t, Bundle{
+	require.NoError(t, Generation{
 		Stream:  "foobar",
 		Path:    "/tmp/abc",
 		Comment: "",
@@ -41,7 +41,7 @@ func Test_ValidateBundle_ok(t *testing.T) {
 }
 
 func Test_String(t *testing.T) {
-	b := Bundle{
+	b := Generation{
 		Stream:  "foobar",
 		Path:    "/tmp/abc",
 		Comment: "a nice little comment",

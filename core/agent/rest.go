@@ -62,7 +62,7 @@ func (a *API) createStream(c stream.Metadata) error {
 
 // Publish a new generation of a Bundle to a Stream.
 func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
-	bundle, err := stream.UnpackBundle(r.Body)
+	bundle, err := stream.UnpackGeneration(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -75,7 +75,7 @@ func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
 }
 
 // given a Bundle, Torrentify the content, publish a Pack
-func (a *API) publish(b stream.Bundle) error {
+func (a *API) publish(b stream.Generation) error {
 	log.Println("publish a bundle:", b)
 	/*
 		mi, err := common.Torrentify(a.masters, b, 4)

@@ -42,7 +42,7 @@ func (c *Client) CreateStream(stream stream.Metadata) error {
 }
 
 // Publish is used to announce the availability of a new Pack.
-func (c *Client) Publish(pack stream.Bundle) error {
+func (c *Client) Publish(pack stream.Generation) error {
 	js, err := pack.JSON()
 	if err != nil {
 		return err

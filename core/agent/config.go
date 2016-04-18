@@ -31,7 +31,7 @@ func (c *Config) String() string {
 	bs, err := json.MarshalIndent(c, " ", " ")
 	if err != nil {
 		log.Println("failed to marshal config:", err)
-		return "{}"
+		return "<ERROR>"
 	}
 	return string(bs)
 }

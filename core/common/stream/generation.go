@@ -8,29 +8,29 @@ import (
 	"io"
 )
 
-// Bundle represents the publication of a new generation of content on a Stream.
-type Bundle struct {
+// Generation represents the publication of a new generation of content to a stream.
+type Generation struct {
 	Stream    string `json:"stream"`
 	Path      string `json:"path"`
 	Comment   string `json:"comment"`
 	MagnetURI string `json:"magnet"`
 }
 
-// UnpackBundle unpacks a json representation of a Bundle.
-func UnpackBundle(r io.Reader) (Bundle, error) {
+// UnpackGeneration unpacks a json representation of a Bundle.
+func UnpackGeneration(r io.Reader) (Generation, error) {
 	decoder := json.NewDecoder(r)
-	var bundle Bundle
+	var bundle Generation
 	if err := decoder.Decode(&bundle); err != nil {
-		return Bundle{}, err
+		return Generation{}, err
 	}
 	if err := bundle.valid(); err != nil {
-		return Bundle{}, err
+		return Generation{}, err
 	}
 	return bundle, nil
 }
 
 // JSON returns the json representation of b.
-func (b Bundle) JSON() (string, error) {
+func (b Generation) JSON() (string, error) {
 	bs, err := json.Marshal(b)
 	if err != nil {
 		return "", err
@@ -38,7 +38,7 @@ func (b Bundle) JSON() (string, error) {
 	return string(bs), nil
 }
 
-func (b Bundle) valid() error {
+func (b Generation) valid() error {
 	if err := ValidName(b.Stream); err != nil {
 		return err
 	}

@@ -30,7 +30,7 @@ func Test_Client_CreateStream(t *testing.T) {
 	require.NoError(t, err, "failed to jsonify stream")
 	request, err := http.NewRequest("POST", "127.0.0.1:2000/v1/stream/create", strings.NewReader(js))
 	require.NoError(t, err, "failed to create request")
-	a.CreateStream(recorder, request)
+	a.NewStream(recorder, request)
 
 	// recorder should capture something
 	require.Equal(t, 201, recorder.Code)
