@@ -25,7 +25,7 @@ func router(store Store) *mux.Router {
 	api := NewAPI(store)
 	r.HandleFunc("/v1/streams", api.AllStreams).Methods("GET")
 	r.HandleFunc("/v1/streams/create", api.NewStream).Methods("PUT")
-	r.HandleFunc("/v1/streams/publish", api.NewGeneration).Methods("POST")
+	r.HandleFunc("/v1/streams/publish", api.PublishGeneration).Methods("POST")
 	return r
 }
 
@@ -43,7 +43,6 @@ func NewAPI(store Store) *API {
 func (a *API) AllStreams(w http.ResponseWriter, r *http.Request) {
 	println("master get streams handler")
 	w.Header().Set("Content-Type", "application/json")
-
 	streams := a.store.AllStreams()
 
 	encoder := json.NewEncoder(w)
@@ -52,7 +51,6 @@ func (a *API) AllStreams(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(200)
 }
 
 // NewStream is the handler of a master that will actually create a stream.
@@ -73,9 +71,9 @@ func (a *API) NewStream(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(201)
 }
 
-// NewGeneration receives a submitted generation, which will be made available on the
+// PublishGeneration receives a submitted generation, which will be made available on the
 // stream for clients of agents to download via torrent.
-func (a *API) NewGeneration(w http.ResponseWriter, r *http.Request) {
+func (a *API) PublishGeneration(w http.ResponseWriter, r *http.Request) {
 	println("master new generation published handler")
 
 	gen, err := stream.UnpackGeneration(r.Body)

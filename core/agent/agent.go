@@ -10,20 +10,26 @@ import (
 	"github.com/shoenig/subspace/core/master"
 )
 
+// An Agent is the daemon that runs on every machine where torrents may be
+// produced or downloaded.
 type Agent struct {
 	config *Config
 	api    *http.Server
 }
 
+// NewAgent creates a new Agent.
 func NewAgent(config *Config) *Agent {
 	return &Agent{
 		config: config,
 	}
 }
 
+// Start starts an Agent.
 func (a *Agent) Start() {
 	log.Println("-- subspace-agent is starting --")
 	log.Println("config is", a.config)
+
+	peerID := GeneratePeerID("") // todo configurable
 
 	tcfg := &torrent.Config{
 		DataDir:              a.config.DataDir,
@@ -33,7 +39,7 @@ func (a *Agent) Start() {
 		NoDHT:                false,
 		NoUpload:             false,
 		Seed:                 true,
-		PeerID:               GeneratePeerID(""),
+		PeerID:               peerID,
 		DisableUTP:           false,
 		DisableTCP:           false,
 		ConfigDir:            "", // not used
@@ -53,6 +59,7 @@ func (a *Agent) Start() {
 
 	mclient := master.NewClient(a.config.Masters)
 
-	api := apiServer(a.config.APIBindAddr, a.config.Masters, mclient, tclient)
+	api := apiServer(peerID, a.config.APIBindAddr, a.config.Masters, mclient)
+
 	log.Fatal(api.ListenAndServe())
 }

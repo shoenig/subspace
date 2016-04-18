@@ -15,33 +15,41 @@ import (
 )
 
 func apiServer(
+	node string,
 	address string,
 	masters config.Masters,
-	mclient *master.Client,
-	tclient *torrent.Client) *http.Server {
+	mclient *master.Client) *http.Server {
 	return &http.Server{
 		Addr:         address,
-		Handler:      router(masters, mclient, tclient),
+		Handler:      router(node, masters, mclient),
 		ReadTimeout:  10 * time.Minute,
 		WriteTimeout: 30 * time.Second,
 	}
 }
 
-func router(masters config.Masters, mclient *master.Client, tclient *torrent.Client) *mux.Router {
+func router(node string, masters config.Masters, mclient *master.Client) *mux.Router {
 	r := mux.NewRouter()
-	a := &API{masters: masters, mclient: mclient, tclient: tclient}
-	r.HandleFunc("/v1/stream/create", a.CreateStream).Methods("POST")
+	a := &API{
+		node:    node,
+		masters: masters,
+		mclient: mclient,
+	}
+	r.HandleFunc("/v1/streams/create", a.CreateStream).Methods("PUT")
+	r.HandleFunc("/v1/streams/publish", a.PublishGeneration).Methods("POST")
 	return r
 }
 
 // API represents the api handlers of an agent.
 type API struct {
+	node    string
 	masters config.Masters
+
 	mclient *master.Client
 	tclient *torrent.Client
 }
 
-// CreateStream is an endpoint for creating a new stream.
+// CreateStream is an endpoint for creating a new stream, available on every
+// agent so that clients do not need to know anything about the masters.
 func (a *API) CreateStream(w http.ResponseWriter, r *http.Request) {
 	stream, err := stream.UnpackMetadata(r.Body)
 	if err != nil {
@@ -60,8 +68,9 @@ func (a *API) createStream(c stream.Metadata) error {
 	return a.mclient.CreateStream(c)
 }
 
-// Publish a new Generation to a stream.
-func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
+// PublishGeneration singals that a new generation of data on a stream is
+// available for torrenting.
+func (a *API) PublishGeneration(w http.ResponseWriter, r *http.Request) {
 	gen, err := stream.UnpackGeneration(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -78,6 +87,8 @@ func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
 // POST the information to a master.
 func (a *API) publish(gen stream.Generation) error {
 	log.Println("publishing new generation:", gen)
+
+	// going to need metadata of gen.stream
 	/*
 		mi, err := common.Torrentify(a.masters, b, 4)
 		if err != nil {

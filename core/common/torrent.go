@@ -17,8 +17,8 @@ import (
 // Torrentify uses the path of a Generation to build the actual torrent
 // which can be downloaded by clients.
 func Torrentify(
+	peerID string,
 	masters config.Masters,
-	meta stream.Metadata,
 	timestamp time.Time,
 	gen stream.Generation,
 	workers int) (*metainfo.MetaInfo, error) {
@@ -30,9 +30,9 @@ func Torrentify(
 
 	log.Println("[torrent] setting metadata")
 	// 2) set meta information
-	builder.SetName(meta.Name + "-" + timestamp.Format(time.RFC3339))
-	builder.SetComment(fmt.Sprintf("[subspace] generation of stream '%s'", meta.Name))
-	builder.SetCreatedBy(meta.Owner)
+	builder.SetName(gen.Stream + "_" + timestamp.Format(time.RFC3339))
+	builder.SetComment(gen.Comment)
+	builder.SetCreatedBy(peerID)
 	builder.SetCreationDate(time.Now().UTC())
 
 	log.Println("[torrent] adding file content")
