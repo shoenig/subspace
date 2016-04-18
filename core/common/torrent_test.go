@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/anacrolix/torrent/metainfo"
 	"github.com/shoenig/subspace/core/common/stream"
 	"github.com/shoenig/subspace/core/config"
 	"github.com/stretchr/testify/require"
@@ -34,15 +35,18 @@ func Test_Torrentify(t *testing.T) {
 		{Host: "2.3.4.5", DHTPort: 2345},
 	}
 	now := time.Date(2016, 04, 17, 22, 03, 0, 0, time.UTC)
-	t.Log("f.Name", f.Name())
 	generation := stream.Generation{
 		Stream:  "stream1",
 		Path:    f.Name(),
 		Comment: "Test_Torrentify torrent",
 	}
 
-	minfo, err := Torrentify("myPeerId", masters, now, generation, 3)
-	require.NoError(t, err, "failed to torrentfy tempfile")
+	minfo, err := Torrentify("myPeerID", masters, now, generation, 3)
 
-	t.Log("metainfo", minfo)
+	require.NoError(t, err, "failed to torrentfy tempfile")
+	require.Equal(t, "myPeerID", minfo.CreatedBy)
+	require.Equal(t, "Test_Torrentify torrent", minfo.Comment)
+	require.Equal(t, int64(256*1024), minfo.Info.PieceLength)
+	require.Contains(t, minfo.Nodes, metainfo.Node("1.2.3.4:1234"))
+	require.Contains(t, minfo.Nodes, metainfo.Node("2.3.4.5:2345"))
 }

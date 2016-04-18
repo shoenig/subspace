@@ -9,6 +9,7 @@ import (
 
 	"github.com/anacrolix/torrent"
 	"github.com/gorilla/mux"
+	"github.com/shoenig/subspace/core/common"
 	"github.com/shoenig/subspace/core/common/stream"
 	"github.com/shoenig/subspace/core/config"
 	"github.com/shoenig/subspace/core/master"
@@ -88,15 +89,12 @@ func (a *API) PublishGeneration(w http.ResponseWriter, r *http.Request) {
 func (a *API) publish(gen stream.Generation) error {
 	log.Println("publishing new generation:", gen)
 
-	// going to need metadata of gen.stream
-	/*
-		mi, err := common.Torrentify(a.masters, b, 4)
-		if err != nil {
-			return err
-		}
-		magnet := mi.Magnet()
-		thing := stream.NewThing(b, magnet.String())
-		return a.mclient.Publish(thing)
-	*/
-	return nil
+	minfo, err := common.Torrentify(a.node, a.masters, time.Now(), gen, 4)
+	if err != nil {
+		return err
+	}
+
+	gen.MagnetURI = minfo.Magnet().String()
+
+	return a.mclient.PublishGeneration(gen)
 }
