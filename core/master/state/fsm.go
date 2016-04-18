@@ -14,14 +14,14 @@ import (
 
 // MyFSM is an implementation of raft.FSM for creating consensus
 // around the state of
-// - streams available
-// - (todo: other things?)
+// - stream metadata
+// - stream generations
 type MyFSM struct {
 	lock sync.RWMutex
 
 	// -- the ultimate source of truth --
-	streams map[string]stream.Metadata              // stream.Name -> stream
-	packs   map[string]map[uint64]stream.Generation // stream.Name -> bundles (by generation)
+	streams map[string]stream.Metadata              // stream.Name -> stream metadata
+	packs   map[string]map[uint64]stream.Generation // stream.Name -> Generation
 }
 
 // NewMyFSM creates a new MyFSM.

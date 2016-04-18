@@ -73,20 +73,20 @@ func (a *API) NewStream(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(201)
 }
 
-// NewGeneration receives a submitted Pack, which will be made available on the
+// NewGeneration receives a submitted generation, which will be made available on the
 // stream for clients of agents to download via torrent.
 func (a *API) NewGeneration(w http.ResponseWriter, r *http.Request) {
-	println("master add pack handler")
+	println("master new generation handler")
 
-	bundle, err := stream.UnpackGeneration(r.Body)
+	gen, err := stream.UnpackGeneration(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// do logic stuff making pack available
+	// do logic stuff making generation available
 
-	// add a pack of stuff, return new generation number
+	// add a generation full of stuff, return new generation number
 
-	a.store.NewGeneration(bundle)
+	a.store.NewGeneration(gen)
 }

@@ -50,7 +50,7 @@ func (s *RaftStore) AllStreams() []stream.Metadata {
 }
 
 // NewGeneration will add a new generation to the associated stream.
-func (s *RaftStore) NewGeneration(pack stream.Generation) (uint64, error) {
+func (s *RaftStore) NewGeneration(gen stream.Generation) (uint64, error) {
 	// add a new generation to the associated stream
 	return 0, nil
 }

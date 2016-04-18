@@ -41,9 +41,9 @@ func (c *Client) CreateStream(stream stream.Metadata) error {
 	return c.doPOST("/v1/streams/create", js)
 }
 
-// Publish is used to announce the availability of a new Pack.
-func (c *Client) Publish(pack stream.Generation) error {
-	js, err := pack.JSON()
+// Publish is used to announce the availability of a new Generation.
+func (c *Client) Publish(gen stream.Generation) error {
+	js, err := gen.JSON()
 	if err != nil {
 		return err
 	}

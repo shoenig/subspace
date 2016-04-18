@@ -60,31 +60,32 @@ func (a *API) createStream(c stream.Metadata) error {
 	return a.mclient.CreateStream(c)
 }
 
-// Publish a new generation of a Bundle to a Stream.
+// Publish a new Generation to a stream.
 func (a *API) Publish(w http.ResponseWriter, r *http.Request) {
-	bundle, err := stream.UnpackGeneration(r.Body)
+	gen, err := stream.UnpackGeneration(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := a.publish(bundle); err != nil {
+	if err := a.publish(gen); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-// given a Bundle, Torrentify the content, publish a Pack
-func (a *API) publish(b stream.Generation) error {
-	log.Println("publish a bundle:", b)
+// given a Generation, Torrentify the content creating a MagnetURI, and
+// POST the information to a master.
+func (a *API) publish(gen stream.Generation) error {
+	log.Println("publishing new generation:", gen)
 	/*
 		mi, err := common.Torrentify(a.masters, b, 4)
 		if err != nil {
 			return err
 		}
 		magnet := mi.Magnet()
-		pack := stream.NewPack(b, magnet.String())
-		return a.mclient.Publish(pack)
+		thing := stream.NewThing(b, magnet.String())
+		return a.mclient.Publish(thing)
 	*/
 	return nil
 }

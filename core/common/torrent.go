@@ -2,8 +2,26 @@
 
 package common
 
-/*
-func Torrentify(masters config.Masters, bundle stream.Bundle, workers int) (*metainfo.MetaInfo, error) {
+import (
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/anacrolix/torrent/metainfo"
+	"github.com/shoenig/subspace/core/common/stream"
+	"github.com/shoenig/subspace/core/config"
+)
+
+// Torrentify uses the path of a Generation to build the actual torrent
+// which can be downloaded by clients.
+func Torrentify(
+	masters config.Masters,
+	meta stream.Metadata,
+	timestamp time.Time,
+	gen stream.Generation,
+	workers int) (*metainfo.MetaInfo, error) {
 	log.Println("[torrent] setting up the builder")
 	builder := metainfo.Builder{}
 
@@ -12,14 +30,14 @@ func Torrentify(masters config.Masters, bundle stream.Bundle, workers int) (*met
 
 	log.Println("[torrent] setting metadata")
 	// 2) set meta information
-	builder.SetName(bundle.Name)
-	builder.SetComment(bundle.Comment)
-	builder.SetCreatedBy(bundle.Owner)
+	builder.SetName(meta.Name + "-" + timestamp.Format(time.RFC3339))
+	builder.SetComment(fmt.Sprintf("[subspace] generation of stream '%s'", meta.Name))
+	builder.SetCreatedBy(meta.Owner)
 	builder.SetCreationDate(time.Now().UTC())
 
 	log.Println("[torrent] adding file content")
 	// 3) finally add file content
-	err := filepath.Walk(bundle.Path, func(fpath string, info os.FileInfo, err error) error {
+	err := filepath.Walk(gen.Path, func(fpath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("failed to stat item: %v", err)
 		}
@@ -68,4 +86,3 @@ WAIT:
 	// 7) return metainfo on the torrent file we created
 	return metainfo.Load(mtor)
 }
-*/

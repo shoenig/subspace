@@ -16,17 +16,17 @@ type Generation struct {
 	MagnetURI string `json:"magnet"`
 }
 
-// UnpackGeneration unpacks a json representation of a Bundle.
+// UnpackGeneration unpacks a json representation of a Generation.
 func UnpackGeneration(r io.Reader) (Generation, error) {
 	decoder := json.NewDecoder(r)
-	var bundle Generation
-	if err := decoder.Decode(&bundle); err != nil {
+	var gen Generation
+	if err := decoder.Decode(&gen); err != nil {
 		return Generation{}, err
 	}
-	if err := bundle.valid(); err != nil {
+	if err := gen.valid(); err != nil {
 		return Generation{}, err
 	}
-	return bundle, nil
+	return gen, nil
 }
 
 // JSON returns the json representation of b.
@@ -43,7 +43,7 @@ func (b Generation) valid() error {
 		return err
 	}
 	if b.Path == "" {
-		return fmt.Errorf("bundle cannot represent empty file path")
+		return fmt.Errorf("generation cannot represent empty file path")
 	}
 	return nil
 }
