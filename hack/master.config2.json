@@ -20,7 +20,7 @@
     ],
     "raft": {
         "single.master.mode": false,
-        "data.dir": "/tmp/raft2",
+        "data.dir": "/tmp/m2",
         "bind.address": "127.0.0.1:5002"
     }
 }
