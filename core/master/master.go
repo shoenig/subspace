@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/anacrolix/torrent/dht"
+	"github.com/shoenig/subspace/core/master/api"
 	"github.com/shoenig/subspace/core/master/state"
 )
 
@@ -44,9 +45,9 @@ func (m *Master) Start(bootstrap bool) {
 		log.Fatal("failed to start raft:", err)
 	}
 
-	store := NewRaftStore(raft)
+	store := state.NewRaftStore(raft)
 
-	api := apiServer(m.config.APIBindAddr, store)
+	api := api.Server(m.config.APIBindAddr, store)
 
 	log.Fatal(api.ListenAndServe())
 }

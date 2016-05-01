@@ -1,12 +1,11 @@
 // Author hoenig
 
-package master
+package state
 
 import (
 	"fmt"
 
 	"github.com/shoenig/subspace/core/common/stream"
-	"github.com/shoenig/subspace/core/master/state"
 )
 
 // A Store is used by subspace-master to persist data about Stream, Bundle, Info
@@ -21,11 +20,11 @@ type Store interface {
 
 // RaftStore is an implemntation of Store based on raft.
 type RaftStore struct {
-	raft *state.MyRaft
+	raft *MyRaft
 }
 
 // NewRaftStore creates a new RaftStore backed by raft.
-func NewRaftStore(raft *state.MyRaft) *RaftStore {
+func NewRaftStore(raft *MyRaft) *RaftStore {
 	return &RaftStore{
 		raft: raft,
 	}

@@ -1,6 +1,6 @@
 // Author hoenig
 
-package master
+package api
 
 import (
 	"encoding/json"
@@ -9,9 +9,11 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/shoenig/subspace/core/common/stream"
+	"github.com/shoenig/subspace/core/master/state"
 )
 
-func apiServer(address string, store Store) *http.Server {
+// Server returns an http.Server serving up the API.
+func Server(address string, store state.Store) *http.Server {
 	return &http.Server{
 		Addr:         address,
 		Handler:      router(store),
@@ -20,7 +22,7 @@ func apiServer(address string, store Store) *http.Server {
 	}
 }
 
-func router(store Store) *mux.Router {
+func router(store state.Store) *mux.Router {
 	r := mux.NewRouter()
 	api := NewAPI(store)
 	r.HandleFunc("/v1/streams", api.AllStreams).Methods("GET")
@@ -31,11 +33,11 @@ func router(store Store) *mux.Router {
 
 // API is the api handler for a master.
 type API struct {
-	store Store
+	store state.Store
 }
 
 // NewAPI creates a new API backed by store.
-func NewAPI(store Store) *API {
+func NewAPI(store state.Store) *API {
 	return &API{store: store}
 }
 

@@ -1,6 +1,6 @@
 // Author hoenig
 
-package master
+package state
 
 import "github.com/shoenig/subspace/core/common/stream"
 
