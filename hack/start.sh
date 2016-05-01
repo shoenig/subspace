@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -u
+set -x
+set -e
+
 old="$(pwd)"
 function goback {
     cd ${old}

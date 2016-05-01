@@ -1,6 +1,6 @@
 // Author hoenig
 
-package master
+package service
 
 import (
 	"encoding/json"

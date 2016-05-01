@@ -8,17 +8,18 @@ import (
 
 	"github.com/anacrolix/torrent/dht"
 	"github.com/shoenig/subspace/core/master/api"
+	"github.com/shoenig/subspace/core/master/service"
 	"github.com/shoenig/subspace/core/master/state"
 )
 
 // Master does things.
 type Master struct {
-	config *Config
+	config *service.Config
 	raft   *state.MyRaft
 }
 
 // NewMaster creates a Master which does things.
-func NewMaster(config *Config) *Master {
+func NewMaster(config *service.Config) *Master {
 	return &Master{
 		config: config,
 	}
@@ -47,7 +48,7 @@ func (m *Master) Start(bootstrap bool) {
 
 	store := state.NewRaftStore(raft)
 
-	api := api.Server(m.config.APIBindAddr, store)
+	api := api.Server(m.config.APIBindAddr, m.config, store)
 
 	log.Fatal(api.ListenAndServe())
 }

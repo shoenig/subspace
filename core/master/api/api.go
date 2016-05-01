@@ -10,18 +10,18 @@ import (
 	"github.com/shoenig/subspace/core/master/state"
 )
 
-// API is the api handler for a master.
-type API struct {
+// StreamsAPI is the api handler for managing streams.
+type StreamsAPI struct {
 	store state.Store
 }
 
-// NewAPI creates a new API backed by store.
-func NewAPI(store state.Store) *API {
-	return &API{store: store}
+// NewStreamsAPI creates a new API backed by store.
+func NewStreamsAPI(store state.Store) *StreamsAPI {
+	return &StreamsAPI{store: store}
 }
 
 // AllStreams returns a JSON list of all streams.
-func (a *API) AllStreams(w http.ResponseWriter, r *http.Request) {
+func (a *StreamsAPI) AllStreams(w http.ResponseWriter, r *http.Request) {
 	println("master get streams handler")
 	w.Header().Set("Content-Type", "application/json")
 	streams := a.store.AllStreams()
@@ -35,7 +35,7 @@ func (a *API) AllStreams(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewStream is the handler of a master that will actually create a stream.
-func (a *API) NewStream(w http.ResponseWriter, r *http.Request) {
+func (a *StreamsAPI) NewStream(w http.ResponseWriter, r *http.Request) {
 	println("master create stream")
 
 	s, err := stream.UnpackMetadata(r.Body)
@@ -54,7 +54,7 @@ func (a *API) NewStream(w http.ResponseWriter, r *http.Request) {
 
 // PublishGeneration receives a submitted generation, which will be made available on the
 // stream for clients of agents to download via torrent.
-func (a *API) PublishGeneration(w http.ResponseWriter, r *http.Request) {
+func (a *StreamsAPI) PublishGeneration(w http.ResponseWriter, r *http.Request) {
 	println("master new generation published handler")
 
 	gen, err := stream.UnpackGeneration(r.Body)
