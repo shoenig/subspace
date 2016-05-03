@@ -41,7 +41,11 @@ func (m *Master) Start(bootstrap bool) {
 	log.Println("dht server is", dhtServer)
 
 	// -- startup raft --
-	raft, err := state.NewMyRaft(bootstrap, m.config.Raft)
+	members, err := m.config.RaftMembers()
+	if err != nil {
+		log.Fatal("failed to determine raft members:", err)
+	}
+	raft, err := state.NewMyRaft(bootstrap, members, m.config.Raft)
 	if err != nil {
 		log.Fatal("failed to start raft:", err)
 	}

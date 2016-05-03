@@ -29,6 +29,7 @@ type MasterPeer struct {
 	APIPort       int    `json:"api.port"`
 	APIDisableTLS bool   `json:"api.disable.tls"`
 	DHTPort       int    `json:"dht.port"`
+	RaftPort      int    `json:"raft.port"`
 }
 
 // DHT returns the address for torrent and swarm activity of p.

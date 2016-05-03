@@ -36,20 +36,22 @@ type MyRaft struct {
 }
 
 // NewMyRaft creates a new store.
-func NewMyRaft(leader bool, rcfg Config) (*MyRaft, error) {
+func NewMyRaft(leader bool, peers []string, rcfg Config) (*MyRaft, error) {
 	rconfig := &raft.Config{
 		HeartbeatTimeout:           1 * time.Second,
-		ElectionTimeout:            1 * time.Second,
-		CommitTimeout:              50 * time.Millisecond,
+		ElectionTimeout:            3 * time.Second,
+		CommitTimeout:              550 * time.Millisecond,
 		MaxAppendEntries:           64,
 		ShutdownOnRemove:           true,
 		DisableBootstrapAfterElect: true,
 		TrailingLogs:               10240,
 		SnapshotInterval:           120 * time.Second,
 		SnapshotThreshold:          8192,
-		EnableSingleNode:           rcfg.SingleMode,
-		LeaderLeaseTimeout:         500 * time.Millisecond,
-		StartAsLeader:              leader,
+
+		// bootstrap leadership
+		EnableSingleNode:   rcfg.SingleMode,
+		StartAsLeader:      leader,
+		LeaderLeaseTimeout: 500 * time.Millisecond,
 	}
 
 	boltPath := filepath.Join(rcfg.DataDir, "boltdb")
@@ -79,7 +81,15 @@ func NewMyRaft(leader bool, rcfg Config) (*MyRaft, error) {
 	}
 
 	peerPath := filepath.Join(rcfg.DataDir, "peers")
+	_, err = toolkit.Touch(filepath.Join(peerPath, "peers.json"), true)
+	if err != nil {
+		return nil, err
+	}
 	peerstore := raft.NewJSONPeers(peerPath, transport)
+	err = peerstore.SetPeers(peers)
+	if err != nil {
+		return nil, err
+	}
 
 	fsm := NewMyFSM()
 
