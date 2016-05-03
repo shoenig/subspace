@@ -19,7 +19,7 @@ if [[ "${dir}" == "subspace-master" ]] ; then
     else
         bootstrap=""
     fi
-    exec ./subspace-master "${bootstrap}" --config "../../hack/master.config${1}.json"
+    exec ./subspace-master ${bootstrap} --config "../../hack/master.config${1}.json"
 elif [[ "${dir}" == "subspace-agent" ]] ; then
     exec ./subspace-agent --config "../../hack/agent.config${1}.json"
 else

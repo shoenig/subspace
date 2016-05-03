@@ -1,13 +1,22 @@
 {
     "api.bind.address": "127.0.0.1:2000",
     "torrent.bind.address": "0.0.0.0:2001",
-    "data.dir": "/tmp/a2",
-    "masters" : [
+    "data.dir": "/tmp/subspace-agent/a2",
+    "masters": [
         {
             "host": "127.0.0.1",
             "api.port": 4000,
-            "api.disable.tls": false,
             "dht.port": 4001
+        },
+        {
+            "host": "127.0.0.1",
+            "api.port": 5000,
+            "dht.port": 5001
+        },
+        {
+            "host": "127.0.0.1",
+            "api.port": 6000,
+            "dht.port": 6001
         }
     ]
 }
